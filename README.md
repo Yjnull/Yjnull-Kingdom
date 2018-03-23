@@ -1,3 +1,6 @@
+---
+style: candy
+---
 # android-interview-planing
 for android interview
 
