@@ -16,4 +16,7 @@ for android interview
 11. 对 JNI、Camera、Call、AMS、锁屏、省电、性能优化、锁卡等有深入理解。
 12. 具备良好的数据结构和算法基础。
 13. 项目重构。
-`- [ ]`sdf
+- [ ] **Cmd Markdown 开发**
+    - [ ] 改进 Cmd 渲染算法，使用局部渲染技术提高渲染效率
+    - [ ] 支持以 PDF 格式导出文稿
+    - [x] 新增Todo列表功能
