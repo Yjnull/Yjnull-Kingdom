@@ -1,6 +1,3 @@
----
-style: candy
----
 # android-interview-planing
 for android interview
 
@@ -8,7 +5,7 @@ for android interview
 ====
 1. 扎实的计算机基础。
 2. 熟练掌握 java 语言，了解 java 的线程操作、内存管理。
-3. 熟练掌握 Android UI 开发，掌握四大组件、Handler、AsyncTask、事件传递处理、View 绘制过程等常见概念。
+3. 熟练掌握 Android UI 开发，-[ ] 掌握四大组件、Handler、AsyncTask、事件传递处理、View 绘制过程等常见概念。
 4. 独立负责过模块或 APP 开发。
 5. 深入了解开源框架、移动性能优化。
 6. 自定义控件。
@@ -19,4 +16,4 @@ for android interview
 11. 对 JNI、Camera、Call、AMS、锁屏、省电、性能优化、锁卡等有深入理解。
 12. 具备良好的数据结构和算法基础。
 13. 项目重构。
-
+`- [ ]`sdf
