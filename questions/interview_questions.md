@@ -71,10 +71,11 @@
 2. hash原理
 3. 手写代码，如何找出一段字符串中，出现最多的字符是哪个
 ```
+大致思路
 int[] x = new int[26];
 char[] c = str.toCharArray();
 for(int i = 0; i < c.length; i++){
-	x[ca[i] - '0']++;
+	x[c[i] - 'a']++; //只对小写的26个英文字母有效
 }
 ```
 
