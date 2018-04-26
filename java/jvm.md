@@ -19,10 +19,8 @@
 | ParallelGCThreads       | 设置并行GC时进行内存回收的线程数 |
 
 
-(续)
-
 | 参数                             |  描述   |
-|--------------- ---------------  |:------:|
+|---------------                  |:------:|
 | GCTimeRatio                     | GC 时间占总时间的比率，默认值为99，即允许 1% 的GC时间，仅在使用 Parallel Scavenge 收集器生效 |
 | MaxGCPauseMillis                | 设置 GC 的最大停顿时间，仅在使用 Parallel Scavenge 收集器时生效 |
 | CMSInitiatingOccupancyFraction  | 设置 CMS 收集器在老年代空间被使用多少后触发垃圾收集，默认值为 68%，仅在使用 CMS 收集器时生效 |
