@@ -2,38 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="709be8c9-8ba4-4a2e-aaa5-17f8eee3f153" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/Data_Algorithms.iml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap03/SimpleSort.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap03/TestSort.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/BracketChecker.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/InToPost.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/MyStack.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/ParsePost.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/PriorityQ.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/Queue.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap04/TestADT.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap05/Link.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap05/LinkList.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/Chap05/LinkList2App.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/out/production/Data_Algorithms/leetcode/Solution.class" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap03/SimpleSort.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap03/TestSort.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/BracketChecker.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/InToPost.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/MyStack.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/ParsePost.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/PriorityQ.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/Queue.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap04/TestADT.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap05/Link.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap05/LinkList.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/Chap05/LinkList2App.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/leetcode/Solution.java" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -48,7 +17,7 @@
       <file leaf-file-name="Solution.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/leetcode/Solution.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2499">
+            <state relative-caret-position="0">
               <caret line="147" column="4" lean-forward="false" selection-start-line="147" selection-start-column="4" selection-end-line="147" selection-end-column="4" />
               <folding />
             </state>
@@ -58,8 +27,8 @@
       <file leaf-file-name="SimpleSort.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Chap03/SimpleSort.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="503">
-              <caret line="33" column="22" lean-forward="false" selection-start-line="33" selection-start-column="22" selection-end-line="33" selection-end-column="22" />
+            <state relative-caret-position="146">
+              <caret line="12" column="37" lean-forward="true" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
               <folding />
             </state>
           </provider>
@@ -106,7 +75,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="21" />
+    <option name="x" value="54" />
     <option name="y" value="23" />
     <option name="width" value="1680" />
     <option name="height" value="1027" />
@@ -132,24 +101,7 @@
           <expand>
             <path>
               <item name="Data_Algorithms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Data_Algrithms" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Data_Algorithms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Data_Algrithms" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Data_Algorithms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Data_Algrithms" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Chap04" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Data_Algorithms" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Data_Algrithms" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="leetcode" type="462c0819:PsiDirectoryNode" />
+              <item name="Data_Algorithms" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -332,7 +284,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="21" y="23" width="1680" height="1027" extended-state="0" />
+    <frame x="54" y="23" width="1680" height="1027" extended-state="0" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -341,7 +293,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18240343" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32939914" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -410,14 +362,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/leetcode/Solution.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/leetcode/Solution.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -706,7 +650,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/leetcode/Solution.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2499">
+        <state relative-caret-position="0">
           <caret line="147" column="4" lean-forward="false" selection-start-line="147" selection-start-column="4" selection-end-line="147" selection-end-column="4" />
           <folding />
         </state>
@@ -733,10 +677,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Chap03/SimpleSort.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="503">
-          <caret line="33" column="22" lean-forward="false" selection-start-line="33" selection-start-column="22" selection-end-line="33" selection-end-column="22" />
+        <state relative-caret-position="146">
+          <caret line="12" column="37" lean-forward="true" selection-start-line="12" selection-start-column="37" selection-end-line="12" selection-end-column="37" />
           <folding />
         </state>
       </provider>
