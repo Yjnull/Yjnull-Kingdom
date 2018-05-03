@@ -2,7 +2,7 @@
 
 Phone: 176 8886 7625　　　　　　　 　　　Email: yywangyi_jj@163.com
 
-GitHub: github.com/Yjnull　　　　　　　　Blog: my.csdn.net/u014306335
+GitHub: github.com/Yjnull　　　　　　　　　Blog: my.csdn.net/u014306335
 
 ---
 
@@ -11,9 +11,10 @@ GitHub: github.com/Yjnull　　　　　　　　Blog: my.csdn.net/u014306335
 #### 2017/03 - 至今　　　　　　上海润通实业投资有限公司 　　    	　Android 开发
 
 独立负责公司 Agripos农批系统 的开发，维护，重构。
-1、对接银联 POS 机、浦发 POS 机等终端，使本系统支持不同终端的刷卡、支付等功能。
-2、项目所有新功能开发，不同市场的分支维护。
-3、重构原项目，使用 EventBus + Retrofit2.0 快速优雅的封装 API ，并使用聚合类让上层应用只持有 Agripos 一个对象即可获取所有数据
+
+1. 对接银联 POS 机、浦发 POS 机等终端，使本系统支持不同终端的刷卡、支付等功能。
+2. 项目所有新功能开发，不同市场的分支维护。
+3. 重构原项目，使用 EventBus + Retrofit2.0 快速优雅的封装 API ，并使用聚合类让上层应用只持有 Agripos 一个对象即可获取所有数据
 
 
 #### 2013/09 - 2017/06　　　　　　湖南工业大学	　　　　　　　　　　本科
