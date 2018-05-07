@@ -145,9 +145,69 @@ public class Solution {
         }
         return sb.delete(sb.length() - 1, sb.length()).toString();
     }
+
+    public static List<List<Integer>> largeGroupPositions(String S) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> mList = new ArrayList<>();
+        char[] sub = S.toCharArray();
+        for(int i = 1; i < sub.length; i++) {
+            mList.add(i);
+            if(sub[i] != sub[i - 1]) {
+                if(mList.size() >= 3) {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.add(mList.get(0) - 1);
+                    temp.add(mList.get(mList.size() - 1) - 1);
+                    result.add(temp);
+                }
+                mList.clear();
+            }
+        }
+
+        if(mList.size() >= 2) {
+            List<Integer> temp = new ArrayList<>();
+            temp.add(mList.get(0) - 1);
+            temp.add(mList.get(mList.size() - 1));
+            result.add(temp);
+        }
+
+        return result;
+    }
+
+    public static String maskPII(String S) {
+        StringBuilder sb = new StringBuilder();
+        if(S.contains("@")) {
+            String[] str = S.toLowerCase().split("@");
+            String lower = str[0];
+            sb.append(lower.charAt(0))
+                    .append("*****")
+                    .append(lower.charAt(lower.length() - 1))
+                    .append("@")
+                    .append(str[1]);
+
+        }  else {
+            String str = S.replace("(", "")
+                    .replace(")", "")
+                    .replace("-", "")
+                    .replace("+", "")
+                    .replace(" ", "");
+            String country = str.length() <= 10 ? "" : str.substring(0, str.length() - 10);
+            String mask = "";
+            if(country.length() > 0) {
+                sb.append("+");
+                for(int i = 0; i < country.length() && i < 3; i++)
+                    sb.append("*");
+                sb.append("-");
+            }
+            sb.append("***-***-").append(str.substring(str.length() - 4));
+        }
+
+        return sb.toString();
+    }
     
     public static void main(String[] args) {
         //System.out.println(trap(new int[]{2, 0, 2}));
         //System.out.println(toGoatLatin("I speak Goat Latin"));
+        //System.out.println(largeGroupPositions("abcdddeeeeaabbbcd"));
+        System.out.println(maskPII("(3906)2 07143 711"));
     }
 }
