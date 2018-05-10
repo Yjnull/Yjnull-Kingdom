@@ -6,6 +6,8 @@
 3. Java 泛型
 4. Java ClassLoader 加载机制
 5. GC 回收算法
+6. Java 的四种引用，强软弱虚，软引用和弱引用的区别
+7. StringBuilder 和 StringBuffer 的区别
 
 ## 数据结构算法
 1. 8种排序算法
@@ -29,6 +31,7 @@
 15. android8.0 可以用文件进行进程通信嘛
 16. 两个 ListView，一个竖滑，一个横向滑动，如何解决滑动冲突
 17. 京东分类页面，两个滑动如何实现的
-18. 数据框架有用过吗，ormLite，greenDAO
+18. 数据库框架有用过吗，ormLite，greenDAO
 19. 自定义 view
 20. 微信上的下拉出现小程序列表是怎么做到的
+21. LruCache 原理 通过LinkedHashMap实现
