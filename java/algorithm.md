@@ -27,7 +27,7 @@
 ```
 private void preOrder(Node localRoot) {
 	if(localRoot != null) {
-    	System.out.println();
+    	System.out.println(localRoot.iData + " ");
     	inOrder(localRoot.leftChild);
         inOrder(localRoot.rightChild);
     }
@@ -39,7 +39,7 @@ private void preOrder(Node localRoot) {
 private void inOrder(Node localRoot) {
 	if(localRoot != null) {
     	inOrder(localRoot.leftChild);
-        System.out.println();
+        System.out.println(localRoot.iData + " ");
         inOrder(localRoot.rightChild);
     }
 }
@@ -51,7 +51,7 @@ private void postOrder(Node localRoot) {
 	if(localRoot != null) {
     	inOrder(localRoot.leftChild);
         inOrder(localRoot.rightChild);
-         System.out.println();
+         System.out.println(localRoot.iData + " ");
     }
 }
 ```
@@ -62,6 +62,36 @@ private void postOrder(Node localRoot) {
 则节点的左子节点是 $$$2*index + 1$$$
 则节点的右子节点是 $$$2*index + 2$$$
 它的父节点是     $$$(index - 1) / 2$$$
+
+
+## 9. 红 - 黑树
+1. 二叉搜索树
+ - 普通的二叉搜索树作为数据存储工具有重要的优势：可以快速找到一个给定关键字的数据项，并且可以快速的插入和删除数据项。
+ - 缺点：当插入的数据是有序的数据时（无论是升序还是逆序），速度就变得特别慢。因为当插入数值有序时，二叉树就是非平衡的了，而对于非平衡数，它的快速查找（插入、删除）指定数据项的能力就丧失了。
+
+2. 解决非平衡树问题的方法之一： **红 - 黑树**，它是增加了某些特点的二叉搜索树。
+3. 搜索部分非平衡树的时间介于 O(N) 和 O(log N)，这取决于树的不平衡程度。
+
+4. **红 - 黑树特征**
+ - 节点都有颜色。(实际就是在节点类中增加一个数据字段，可以是boolean型的(例 isRed)，以此来表示颜色的信息)
+ - 在插入和删除的过程中，要遵循保持这些颜色的不同排列的规则。
+ - 红黑规则： 
+ 	- 每一个节点不是红色的就是黑色的。
+ 	- 根总是黑色的。
+ 	- 如果节点是红色的，则它的子节点必须是黑色的（反之倒不一定必须为真）。
+ 	- 从根到叶节点或空子节点的每条路径，必须包含相同数目的黑色节点。
+ - 修正违规的情况：假设颜色的规则被违犯了，如何进行修正
+ 	- 改变节点的颜色。
+ 	- 执行旋转操作。 
+
+
+
+
+
+
+
+
+
 
 
 
