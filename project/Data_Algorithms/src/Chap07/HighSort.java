@@ -167,7 +167,7 @@ public class HighSort {
         a[rightPtr] = temp;
     }
 
-    public static void insertionSort(int left, int right, int a[]) {
+    private static void insertionSort(int left, int right, int a[]) {
         int out, in;
 
         for (out = left + 1; out <= right; out++) {
