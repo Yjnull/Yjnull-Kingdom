@@ -35,6 +35,24 @@ public class HighSort {
         return a;
     }
 
+    public static void shellSort2(int[] a) {
+        int D, P, i;
+        int temp;
+        
+        int h = 1;
+        while (h < a.length / 3)     /* 增量序列赋值 */
+            h = 3*h + 1;
+
+        for (D = h; D > 0; D = (D - 1) / 3) {
+            for (P = D; P < a.length; P++) {
+                temp = a[P];
+                for (i = P; i >= D && a[i - D] > temp; i-=D)
+                    a[i] = a[i - D];
+                a[i] = temp;
+            }
+        }
+    }
+
     /**
      *  划分
      */
