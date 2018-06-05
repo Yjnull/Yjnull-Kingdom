@@ -13,7 +13,7 @@
 
 ## 7. 排序
 
-- **内部排序**：假设我们的内存空间充分大，所有的数据可以一次性的被导到内存空间里，所有的排序过程是在内存里一次性完成的。 比如内存空间有2GB ，要求对10TB 的数据进行排序，这样内部排序就不可能了，救得进行**外部排序**。
+- **内部排序**：假设我们的内存空间充分大，所有的数据可以一次性的被导到内存空间里，所有的排序过程是在内存里一次性完成的。 比如内存空间有2GB ，要求对10TB 的数据进行排序，这样内部排序就不可能了，就得进行**外部排序**。
 - **稳定性**：任意两个相等的数据，排序前后的相对位置不发生改变。
 - **逆序对**：对于下标 i < j, 如果 A[i] > A[j] ,则称 (i, j) 是一对逆序对 (inversion)
 
@@ -63,9 +63,7 @@ private void preOrder(Node localRoot) {
     	inOrder(localRoot.leftChild);
 
         inOrder(localRoot.rightChild);
-
     }
-
 }
 
 ```
@@ -85,9 +83,7 @@ private void inOrder(Node localRoot) {
         System.out.println(localRoot.iData + " ");
 
         inOrder(localRoot.rightChild);
-
     }
-
 }
 
 ```
@@ -106,10 +102,8 @@ private void postOrder(Node localRoot) {
 
         inOrder(localRoot.rightChild);
 
-         System.out.println(localRoot.iData + " ");
-
+        System.out.println(localRoot.iData + " ");
     }
-
 }
 
 ```
