@@ -22,11 +22,9 @@ onPause () 回调总是跟在 onResume ()之后。
 - **onPause ()**
 当 activity **失去焦点并进入暂停状态时**，系统会调用。 例如，当用户点击 **"后退" 或 "最近"** 按钮时，会出现此状态。
 当系统调用 onPause () 时，从技术上讲，Activity仍然是部分可见的，但通常表示用户正在离开Activity，Activity 将很快进入 Stopped 或者 Resumed 状态。
-
- 如果用户期望 UI 更新，则处于 Paused 状态的 Activity 可以继续更新 UI。 例如 导航地图屏幕或媒体播放器播放，即使它们失去了焦点，用户也希望他们的 UI 继续更新。
- 
- 你不应该在 onPause 里去保存 应用程序或用户数据，进行网络调用，或执行数据库事务等耗重量级操作。
- 一旦 onPause() 执行完毕，接下来的回调将 onStop() 或 onResume()，根据活动进入暂停状态以后会发生什么决定。
+	如果用户期望 UI 更新，则处于 Paused 状态的 Activity 可以继续更新 UI。 例如 导航地图屏幕或媒体播放器播放，即使它们失去了焦点，用户也希望他们的 UI 继续更新。
+    你不应该在 onPause 里去保存 应用程序或用户数据，进行网络调用，或执行数据库事务等耗重量级操作。
+    一旦 onPause() 执行完毕，接下来的回调将 onStop() 或 onResume()，根据活动进入暂停状态以后会发生什么决定。
 
 - **onStop ()**
 当 activity **不再对用户可见时**，系统会调用。 这可能是因为 activity 被破坏，或者新 activity 正在开始，又或者 一个存在的activity正在进入 Resumed 状态并且正在覆盖已停止的 activity。
@@ -45,7 +43,7 @@ onPause () 回调总是跟在 onResume ()之后。
 #### 1.1.2 生命周期具体说明
 - 针对一个Activity，第一次启动，回调如下：onCreate -> onStart -> onResume。
 - 当用户打开新的 activity 或者切换到桌面 或者按最近按钮时，回调如下：onPause -> onStop。
-  如果新Activity采用透明主题时，回调如下：onPause。
+  特殊情况, 如果新Activity采用透明主题时，回调如下：onPause。
   
 - 当用户再次回到原 activity 时，回调如下：onRestart -> onStart -> onResume。
 - 当用户弹出一个对话框( AlertDialog )时，activity 生命周期不会发生变化。
@@ -94,18 +92,67 @@ onPause () 回调总是跟在 onResume ()之后。
 
 
 ## 二. android任务栈
+任务栈是一种“后进先出”的栈结构。
+任务栈分为 **前台任务栈** 和 **后台任务栈** ，后台任务栈中的 activity 位于暂停状态。
 
+- TaskAffinity 任务相关性， 这个参数标识了一个 Activity 所需要的任务栈的名字。
+- 默认情况下，所有 Activity 所需的任务栈的名字为包名。
+- 通过指定 TaskAffinity 可以为 Activity 指定新的任务栈的名字，当然必须不能和包名相同。
+- TaskAfiinity 主要是和 singleTask 启动模式或者 allowTaskReparenting 属性配对使用。
+- 在 AndroidManifest 文件中指定。
+- 命令** adb shell dumpsys activity** 可导出 Activity 信息。
 
 
 ## 三. activity启动模式
 
 - **standard(标准模式)**
+系统默认模式，每启动一个 Activity 就会重新创建一个新的实例。
+这种模式下， Activity A 启动了 Activity B，那么 B 就会进入到 A 所在的任务栈中。
+
 - **singleTop(栈顶复用模式)**
+如果新 Activity 已经位于栈顶，那么此 Activity 不会再重新创建，同时它的 onNewIntent 方法会被回调。
+
 - **singleTask(栈内复用模式)**
-- **singleInstance(单实例模式)**
+只要 Activity 在一个栈中存在，那么多次启动此 Activity 都不会重新创建实例。
+
+- **singleInstance(单实例模式, 加强的 singleTask 模式)**
+除了具有 singleTask 模式的所有特性外，还加强了一点，那就是具有此种模式的 Activity 只能单独的位于一个任务栈中。
 
 
-## 四. scheme跳转协议
+![启动模式](img/activity_launchmode.png)
+
+
+
+## 四. IntentFilter 的匹配规则
+隐式启动 Activity 需要 Intent 能够匹配目标组件的 IntentFilter中所设置的过滤信息，如果不匹配则无法启动目标组件。
+IntentFilter 的过滤信息有 action、category、data
+
+- **action：**
+1. action是一个字符串 区分大小写
+2. 当过滤规则中有 action 时，那么只要 Intent 中的 action 能够和过滤规则中的任何一个相同即可匹配成功。需注意：如果Intent 没有指定 action，将匹配失败。
+3. 也就是说，当过滤规则有 action 时，Intent 中必须存在 action。
+
+- **category：**
+1. category 和 action 不同，它不强制要求 Intent 中必须含有 category。
+2. 如果 Intent 中没有 category，那么可以匹配成功。
+3. 如果 Intent 中有 category，那么不管有几个 category，都必须和过滤规则中的 category 相同才能匹配成功。
+4. 为什么不设置 category 也可以匹配成功，因为 startActivity 时会默认为 Intent 加上 "android.intent.category.DEFAULT" 这个 category。
+5. 所以为了 activity 能够接收隐式调用，必须在intent-filter 中指定 "android.intent.category.DEFAULT" 这个 category。
+
+- **data**
+1. data 由两部分组成：mimeType 和 URI。
+2. mimeType 指媒体类型：如 image/jpeg、video/*等。
+3. URI 结构： `<schema>://<host>:<port>/[<path>|<pathPrefit>|<pathPattern>]`
+4. 如果没有指定 URI ，则 URI 的默认值为 content 或 file
+5. 例如指定 mimeType 为 **image/png**，未指定 URI 。 则如下代码可匹配过滤规则
+`intent.setDataAndType(Uri.parse("file://abc"), "image/png");` 
+或者
+`intent.setDataAndType(Uri.parse("content://abc"), "image/png");`
+
+- **总结**
+1. 隐式启动 Activity 时，IntentFilter 一定要指定 **"android.intent.category.DEFAULT"** 这个 category。
+2. action、category、data ,如果匹配了 action，那么其余两个也得匹配成功才能找到 Activity。
+3.  如果只匹配 data，那么 action 不指定也可以运行成功，不会返回指定 Activity，而是返回ResolverActivity，让你选择默认程序运行。
 
 
 
