@@ -4,9 +4,7 @@
 回答一个问题: Activity是什么？
 Activity表示为具有用户界面的单一屏幕，可理解为"界面"。正常情况下，除了Window、Dialog和Toast，我们能见到的界面的确只有Activity。
 
-<div align='center'>
 ![生命周期](img/activity.png "Activity生命周期")
-</div>
 
 ### 1.1 activity生命周期分析
 #### 1.1.1 生命周期概述
@@ -62,20 +60,20 @@ onPause () 回调总是跟在 onResume ()之后。
 只有三个状态是静态的，可以存在较长时间保持状态不变。（其他状态只是过渡状态，系统快速切换并切换到下一状态）
 
 - **运行(Resumed)**
- - 当前 activity 处于栈顶，用户可以与它进行交互。（通常也被理解为 **"running"** 状态）
- - 此状态由 onResume() 进入，onPause() 退出
+	- 当前 activity 处于栈顶，用户可以与它进行交互。（通常也被理解为 **"running"** 状态）
+	- 此状态由 onResume() 进入，onPause() 退出
 
 - **暂停(Paused)**
- - 当前 activity 仍然是可见的，但被另一个 activity 处在最上方，最上方的 activity 是半透明的，或者是部分覆盖整个屏幕。被暂停的 activity 不会再接收用户的输入。
- - 处于活着的状态 （Activity 对象存留在内存，保持着所有的 状态和成员信息，**仍然吸附**在 window manager）。
- - 当资源内存极度不足时，系统会杀掉该 activity 释放相应资源。
- - 此状态由 onPaues() 进入，退出可能是从 onResume() 重新唤醒软件，或者被 onStop() 杀掉。
- 
+	- 当前 activity 仍然是可见的，但被另一个 activity 处在最上方，最上方的 activity 是半透明的，或者是部分覆盖整个屏幕。被暂停的 activity 不会再接收用户的输入。
+	- 处于活着的状态 （Activity 对象存留在内存，保持着所有的 状态和成员信息，**仍然吸附**在 window manager）。
+	- 当资源内存极度不足时，系统会杀掉该 activity 释放相应资源。
+	- 此状态由 onPaues() 进入，退出可能是从 onResume() 重新唤醒软件，或者被 onStop() 杀掉。
+
 - **停止(Stopped)**
- - 当前 activity 完全被隐藏，不被用户可见，可以认为是处于后台。
- - 处于活着的状态 （Activity 对象存留在内存，保持着所有的 状态和成员信息，**不再吸附**在 window manager）。
- - 由于对用户不再可见，只要有内存的需要，系统会杀掉该 activity 来释放相应资源。
- - 此状态由 onStop() 进入，退出是从 onRestart() 重新唤醒软件，或者被 onDestroy() 彻底死亡。其他状态（Created与 Started ）都是短暂的，系统快速执行那些回调函数并通过。
+	- 当前 activity 完全被隐藏，不被用户可见，可以认为是处于后台。
+	- 处于活着的状态 （Activity 对象存留在内存，保持着所有的 状态和成员信息，**不再吸附**在 window manager）。
+	- 由于对用户不再可见，只要有内存的需要，系统会杀掉该 activity 来释放相应资源。
+	- 此状态由 onStop() 进入，退出是从 onRestart() 重新唤醒软件，或者被 onDestroy() 彻底死亡。其他状态（Created与 Started ）都是短暂的，系统快速执行那些回调函数并通过。
 
 ### 1.3 android进程优先级
 
