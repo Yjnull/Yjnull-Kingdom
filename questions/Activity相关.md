@@ -118,8 +118,14 @@ onPause () 回调总是跟在 onResume ()之后。
 - **singleInstance(单实例模式, 加强的 singleTask 模式)**
 除了具有 singleTask 模式的所有特性外，还加强了一点，那就是具有此种模式的 Activity 只能单独的位于一个任务栈中。
 
+**例1**
+任务栈（com.yjnull.slowdev4android）有个 ExampleActivity ，启动模式为standard。 
+任务栈（com.yy.task1）有个 ThreeActivity，启动模式为 singleInstance。 
+启动ExampleActivity，然后启动ThreeActivity，然后两个互相启动，任务栈如下截图。 
+![activity_task1](img/activity_task1.png)
 
-![启动模式](img/activity_launchmode.png)
+**例2**
+![启动模式](img/launchmode.png)
 
 
 
