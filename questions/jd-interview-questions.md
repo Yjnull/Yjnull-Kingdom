@@ -37,7 +37,17 @@
 11. MVP,MVC,MVVM
 12. handler 原理
 13. 为什么要有 handler 机制
-	**答：**多个线程并发更新 UI 的同时，保证线程安全。
+	**答：Handler 的主要作用是 将一个任务切换到 Handler所在的线程中去执行。**
+    1. Android 规定访问 UI 只能在主线程中进行，如果在子线程中访问 UI，程序会抛出异常。ViewRootImpl 对 UI 操作做了验证。
+```
+void checkThread() {
+        if (mThread != Thread.currentThread()) {
+            throw new CalledFromWrongThreadException(
+                    "Only the original thread that created a view hierarchy can touch its views.");
+        }
+    }
+```
+    2. 多个线程并发更新 UI 的同时，保证线程安全。
 
 14. AIDL
 15. android8.0 可以用文件进行进程通信嘛
