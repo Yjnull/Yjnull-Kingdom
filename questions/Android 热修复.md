@@ -55,7 +55,7 @@ public DexClassLoader(String dexPath, String optimizedDirectory,
 - **parent：** 父类加载器，遵从双亲委托模型
 
 **结论：**
-- **DexClassLoader：** 可以假装任意目录下的 dex/jar/apk/zip 文件，需要指定一个 optimizedDirectory。
+- **DexClassLoader：** 可以加载任意目录下的 dex/jar/apk/zip 文件，需要指定一个 optimizedDirectory。
 - **PathClassLoader：** 只能加载已经安装到 Android 系统中的 apk 文件。
 - 同时，它们都继承自 BaseDexClassLoader，所以真正的实现都在 BaseDexClassLoader 内。
 
