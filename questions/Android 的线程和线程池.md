@@ -139,11 +139,174 @@ private final class ServiceHandler extends Handler {
 
 ### 3. AsyncTask
 
-内部有 handler、线程池、task、Call、isCanceld、publishProgress利用 handler 发个消息。 execute、get
+关于它的一些定义啥的，这里就不阐述了。首先看这个类的声明
+
+`public abstract class AsyncTask<Params, Progress, Result>`
+
+根据它的声明，我们可以得到这些信息，AsyncTask 是一个抽象的泛型类，它提供了 Params, Progress, Result 这三个泛型参数。还有个 抽象方法 `protected abstract Result doInBackground(Params... params);`
+- Params ： 参数的类型，即 doInBackground(Params... params)，就是这个方法的参数类型。
+- Progress ：后台任务的执行进度的类型。
+- Result ：后台任务的返回结果的类型。
+
+上述三个参数如果还是不能理解啥意思，那往后面看就知道了。
+
+AsyncTask 提供了4个核心方法
+- onPreExecute()
+- doInBackground(Params... params)   在线程池中执行，此方法用于执行异步任务。
+- onProgressUpdate(Progress... values)
+- onPostExecute(Result result)
+
+这四个方法的含义也不解释了，后面看源码就会清楚的，当然你应该也了解这四个方法的含义。额，我这篇文章只是用来记录自己的随想，所以谅解、谅解。
+
+AsyncTask 在具体的使用过程中是有一些限制条件的，主要有如下几点：
+- 1、AsyncTask 的类必须在主线程中加载
+- 2、AsyncTask 的对象必须在主线程中创建
+- 3、execute 方法必须在主线程中调用
+- 4、不要在程序中直接调用 onPreExecute()、onPostExecute、doInBackground 和 onProgressUpdate 方法
+- 5、一个 AsyncTask 对象只能执行一次，即只能调用一次 execute 方法，否则会报运行时异常
+
+现在我们针对上述几个限制条件来分析，这样带着问题去分析会让自己不迷失。
+
+##### 3.1 AsyncTask 的类必须在主线程中加载
+
+针对这个问题，Android4.1 之前 AsyncTask类 必须在主线程中加载，但是在之后的版本中就被系统自动完成。而在Android5.0 的版本中会在 ActivityThread 的 main方法 中执行 AsyncTask 的 init 方法，而在 Android6.0 中又将  init 方法删除。所以在使用这个 AsyncTask 的时候若是适配更多的系统的版本的话，使用的时候就要注意了。
+
+AsyncTask 内部是通过 Handler 来进行线程切换的。所以我们要想在主线程中去处理结果，那 Handler 肯定得在主线程中去创建。
+
+首先 AsyncTask 在成员变量位置 声明了静态的 Handler
+```
+private static InternalHandler sHandler;
+```
+
+然后在构造函数中可以看到这里对 mHandler 赋值，其中会调用 getMainHandler。 
+我们一般调用的都是那个 无参的构造函数，这里会传null给有参的那个， 其中会判断，如果 callbackLooper == null 就会去调用 getMainHandler()
+```
+	public AsyncTask() {
+        this((Looper) null);
+    }
+
+	public AsyncTask(@Nullable Looper callbackLooper) {
+        mHandler = callbackLooper == null || callbackLooper == Looper.getMainLooper()
+            ? getMainHandler()
+            : new Handler(callbackLooper);
+
+            //省略后续代码
+    }
+```
+
+可以看到，这样既保证了 Handler 采用主线程的 Looper 构建，又使得 AsyncTask 在需要时才被加载。
+```
+	private static Handler getMainHandler() {
+        synchronized (AsyncTask.class) {
+            if (sHandler == null) {
+                sHandler = new InternalHandler(Looper.getMainLooper());
+            }
+            return sHandler;
+        }
+    }
+```
+
+##### 3.3 execute 方法必须在主线程中调用
+
+那为什么 execute 方法必须在主线程中调用呢， 我们前面知道 AsyncTask 的 4 个核心方法除了 doInBackground，其余的都允许在 UI 线程，那么 onPreExecute 这个方法肯定也得运行在主线程中。 
+
+我们往往调用 AsyncTask.execute 方法去执行任务。
+
+```
+public final AsyncTask<Params, Progress, Result> execute(Params... params) {
+        return executeOnExecutor(sDefaultExecutor, params);
+    }
+
+public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
+            Params... params) {
+        if (mStatus != Status.PENDING) {
+            switch (mStatus) {
+                case RUNNING:
+                    throw new IllegalStateException("Cannot execute task:"
+                            + " the task is already running.");
+                case FINISHED:
+                    throw new IllegalStateException("Cannot execute task:"
+                            + " the task has already been executed "
+                            + "(a task can be executed only once)");
+            }
+        }
+
+        mStatus = Status.RUNNING;
+
+        onPreExecute();
+
+        mWorker.mParams = params;
+        exec.execute(mFuture);
+
+        return this;
+    }
+```
+
+从上述代码可以知道， executeOnExecutor 内部会调用 onPreExecute()，这也叫解释了为什么 **execute 方法必须在主线程中调用**，只有在主线程中调用， onPreExecute() 方法才会运行在 主线程中。
+
+
+##### 3.4 一个 AsyncTask 对象只能执行一次，即只能调用一次 execute 方法，否则会报运行时异常
+
+这个问题就很好解答了，在3.3里面的 executeOnExecutor 方法内部很明确， 如果 mStatus != Status.PENDING，就会抛出异常。而我们执行一个任务的时候会把 mStatus = Status.RUNNING ，因此这个疑惑也解决了。
+
+当然 AsyncTask 还有很多可以讲的，比如它内部的 线程池，默认是使用 SerialExecutor 串行执行的，还有 InternalHandler 的 handleMessage ， 以及它内部的 FutureTask 和 WorkerRunnable 等。 这些只要看源码就知道了。 整个 AsyncTask 并不是特别难， 所以它是一种很好用的 **轻量级的异步任务类。**
 
 
 ### 4. 线程池
 
+线程池三个优点：
+- 重用线程池中的线程，避免因为线程的创建和销毁所带来的性能开销
+- 能有效控制线程池的最大并发数，避免大量的线程之间因互相抢占系统资源而导致的阻塞现象
+- 能够对线程进行简单的管理，并提供定时执行以及指定间隔循环执行等功能
+
+Java 通过 **Executors** 提供四种线程池，分别为：
+- newFixedThreadPool ：会创建一种线程数量固定的线程池，它只有核心线程，并且这些核心线程没有超时机制，另外任务队列的大小也是没有限制的。
+```
+public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+```
+
+- newCachedThreadPool ：会创建一中线程数量不定的线程池，它只有非核心线程， 并且最大线程数为 Integer.MAX_VALUE , 该线程池中的线程都有超时机制 60秒， 另外 SynchronousQueue 是一个非常特殊的队列，它可以简单理解为一个无法存储元素的队列，这就导致任何任务都会立即执行。这类线程池适合执行大量的耗时较少的任务。
+```
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+```
+
+- newScheduledThreadPool ：主要用于执行 定时任务 和 具有固定周期的重复任务
+```
+	public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
+        return new ScheduledThreadPoolExecutor(corePoolSize);
+    }
+    
+    public ScheduledThreadPoolExecutor(int corePoolSize) {
+        super(corePoolSize, Integer.MAX_VALUE,
+              DEFAULT_KEEPALIVE_MILLIS, MILLISECONDS,
+              new DelayedWorkQueue());
+    }
+```
+
+- newSingleThreadExecutor ：这类线程池内部只有一个核心线程，它确保所有的任务都在同一个线程中按顺序去执行。
+```
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+```
+
+
+可以看到这几种线程池的本质就是 通过不同的参数初始化一个 ThreadPoolExecutor 对象。
+
+ #####  ThreadPoolExecutor
+ 
+ 
 
 
 
