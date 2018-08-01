@@ -2,7 +2,17 @@
 
 Phone: 176 8886 7625　　　　　　　 　　　Email: yywangyi_jj@163.com
 
-GitHub: github.com/Yjnull　　　　　　　 　　Blog: my.csdn.net/u014306335
+GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/u014306335
+
+---
+
+### 专业技能
+
+* 熟悉 Android 的事件分发机制、View绘制流程等
+* 熟悉 Jvm 内存区域以及 GC 算法等
+* 熟悉常见的数据结构
+* 了解 Android 的 Binder 机制，热修复等原理。
+* 深入了解 Glide、Retrofit 等开源库原理
 
 ---
 
@@ -20,17 +30,6 @@ GitHub: github.com/Yjnull　　　　　　　 　　Blog: my.csdn.net/u01430633
 #### 2013/09 - 2017/06　　　　　　湖南工业大学	　　　　　　　　　　本科
 
 专业：物联网工程　　　　　　　　　　专业排名: Top 10
-
----
-
-### 专业技能
-
-
-* 深入了解 EventBus、Retrofit 等开源库原理
-* 了解 Android 相关性能优化方法
-* 具备良好的数据结构和算法基础
-* 熟悉 Android 中的缓存策略
-* 对蓝牙、Camera 模块有较深理解
 
 ---
 
