@@ -113,7 +113,7 @@ private final class ServiceHandler extends Handler {
 那么 **能执行耗时的后台任务** 这一点相比大家也明白了，但是还是要说清楚一点。
 - 首先，我们知道 Service 是运行在主线程的，当 onCreate 回调完，我们此时拥有了 handler 的实例即mServiceHandler， 另外在 oncreate 里还创建了一个 HandlerThread，大家要注意的是 HandlerThread 就是那个执行耗时任务的线程， 它不是主线程，不要弄混了，不要觉得有 handler 的地方就是在主线程里，大家要记得Handler 的作用是 **将一个任务切换到 Handler 所在的线程中执行**。
 
-清楚了这一点后，想必就没什么难点了，onStartCommand 会去调用 onStart，然后里面会将传进来的 intent 组建成一个 Message 传给 mServiceHandler 去处理，注意 onHandleIntent 里面所运行的都是在另一个线程，即 mServiceHandler 所在的线程。
+清楚了这一点后，想必就没什么难点了，onStartCommand 会去调用 onStart，然后里面会将传进来的 intent 组建成一个 Message 通过 mServiceHandler 发送消息，然后在 onHandleIntent 中去处理，注意 onHandleIntent 里面所运行的都是在另一个线程，即 mServiceHandler 所在的线程。
 ```
 @Override
     public void onStart(@Nullable Intent intent, int startId) {
@@ -148,7 +148,6 @@ private final class ServiceHandler extends Handler {
 - Progress ：后台任务的执行进度的类型。
 - Result ：后台任务的返回结果的类型。
 
-上述三个参数如果还是不能理解啥意思，那往后面看就知道了。
 
 AsyncTask 提供了4个核心方法
 - onPreExecute()
@@ -304,10 +303,67 @@ public static ExecutorService newSingleThreadExecutor() {
 
 可以看到这几种线程池的本质就是 通过不同的参数初始化一个 ThreadPoolExecutor 对象。
 
- #####  ThreadPoolExecutor
- 
- 
+#####  ThreadPoolExecutor 参数解释
 
+```
+public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue<Runnable> workQueue,
+                              ThreadFactory threadFactory) {
+        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+             threadFactory, defaultHandler);
+    }
+```
+
+- **corePoolSize ：** 线程池的核心线程数，默认情况下，核心线程会在线程池中一直存活，即使它们处于闲置状态。如果将 ThreadPoolExecutor 的 allowCoreThreadTimeOut 属性设置为 true，那么闲置的核心线程在等待新任务到来时会有超时策略，超过 keepAliveTime 所指定的时长后，核心线程也会被终止。
+- **maximumPoolSize ：** 线程池所能容纳的最大线程数，当活动线程数达到这个数值后，后续的新任务会被阻塞。
+- **keepAliveTime ：** 非核心线程闲置时的超时时长，超过这个时长，非核心线程会被回收。allowCoreThreadTimeOut 属性设置为 true 时，keepAliveTime 也会作用于核心线程。
+- **unit ：** keepAliveTime 参数的时间单位。
+- **workQueue ：** 线程池中的任务队列，通过线程池的 execute 方法提交的 Runnable 对象会存储在这里。
+- **threadFactory ：** 线程工厂，为线程池提供创建新线程的功能。
+
+
+**AsyncTask 中的线程池 THREAD_POOL_EXECUTOR**
+
+```
+	private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
+    // We want at least 2 threads and at most 4 threads in the core pool,
+    // preferring to have 1 less than the CPU count to avoid saturating
+    // the CPU with background work
+    private static final int CORE_POOL_SIZE = Math.max(2, Math.min(CPU_COUNT - 1, 4));
+    private static final int MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
+    private static final int KEEP_ALIVE_SECONDS = 30;
+    
+    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+        private final AtomicInteger mCount = new AtomicInteger(1);
+
+        public Thread newThread(Runnable r) {
+            return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
+        }
+    };
+
+    private static final BlockingQueue<Runnable> sPoolWorkQueue =
+            new LinkedBlockingQueue<Runnable>(128);
+
+    public static final Executor THREAD_POOL_EXECUTOR;
+
+    static {
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,
+                sPoolWorkQueue, sThreadFactory);
+        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        THREAD_POOL_EXECUTOR = threadPoolExecutor;
+    }
+```
+
+从上面的代码可知，THREAD_POOL_EXECUTOR 配置后的规格如下：
+
+- 核心线程数 最小为 2， 最大为 4
+- 最大线程数为 CPU 核心数的 2 倍 + 1
+- 超时时间为 30s ，且同样作用于 核心线程
+- 任务队列的容量为 128
 
 
 **参考**
