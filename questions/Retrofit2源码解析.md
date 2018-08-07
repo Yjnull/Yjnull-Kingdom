@@ -1,4 +1,6 @@
-## Retrofit2 源码解析
+## Retrofit2 源码解析 (呕心沥血)
+
+**注意：** 本文是对源码的一个跟踪，会对每一行代码有具体的阐述，但是不会介绍 Retrofit 的设计模式。
 
 Retrofit：一个 Restful 设计风格的 HTTP 网络请求框架的封装。基于 OkHttp
 
@@ -11,7 +13,7 @@ Retrofit：一个 Restful 设计风格的 HTTP 网络请求框架的封装。基
 ```
 public interface GitHubService {
 	@GET("user/{user}/repos")
-    Call<List<Repo>> listRepos(@Path("user") String user);
+    Call<List<Integer>> listRepos(@Path("user") String user);
 }
 ```
 
@@ -26,7 +28,7 @@ GitHubService service = retrofit.create(GitHubService.class);
 
 3、调用 listRepos 拿到 Call 实例，可以做同步或异步请求。
 ```
-Call<List<Repo>> repos = service.listRepos("octocat");
+ Call<List<Integer>> repos = service.listRepos("octocat");
 ```
 每个 Call 实例只能使用一次，但调用 clone() 将创建一个可以使用的新实例。
 
@@ -291,7 +293,7 @@ public Retrofit build() {
     return result;
   }
 ```
-这里又见到了 Platform ，在 Retrofit.Builder 我们知道它返回的是 Android() 对象。 接着是个 循环 ，循环取出接口中的 Method ，接着调用 loadServiceMethod 。 loadServiceMethod 里面会根据 Method 生成一个 ServiceMethod，然后存入 serviceMethodCache ， 那么我们大概知道，这是属于提前验证，会提前把接口中每个方法进行解析得到一个 ServiceMethod 对象，然后存入缓存中。 在 loadServiceMethod 中会取缓存中的值，如果有就直接返回 ServiceMethod。
+这里又见到了 Platform ，在 Retrofit.Builder 我们知道它返回的是 Android() 对象。 接着是个 循环 ，循环取出接口中的 Method ，接着调用 loadServiceMethod 。 loadServiceMethod 里面会根据 Method 生成一个 ServiceMethod，然后存入 serviceMethodCache ， 那么我们大概知道，这是属于**提前验证**，会提前把接口中每个方法进行**解析**得到一个 **ServiceMethod** 对象，然后存入缓存中。 在 loadServiceMethod 中会取缓存中的值，如果有就直接返回 ServiceMethod。
 
 由此可以知道 **validateEagerly** 变量是用于 判断是否需要提前验证解析的。
 
@@ -409,18 +411,20 @@ create 方法中 继续往下走，会看到 return 一个 代理对象 Proxy �
 
 ```
   public ServiceMethod build() {
-      // 拿到具体的 CallAdapter 即 网络请求适配器
+      // 拿到具体的 CallAdapter 即 网络请求适配器，具体看 3.1.1.1
       callAdapter = createCallAdapter();
-      // 根据上面拿到的 callAdapter 获取 响应类型
+      // 根据上面拿到的 callAdapter 获取 响应类型，在 3.1.1.1 小节分析完后可知道
+      // 在我们的例子中 responseType = java.util.List<java.lang.Integer>
       responseType = callAdapter.responseType();
       if (responseType == Response.class || responseType == okhttp3.Response.class) {
         throw methodError("'"
             + Utils.getRawType(responseType).getName()
             + "' is not a valid response body type. Did you mean ResponseBody?");
       }
-      //  获取 响应转换器
+      // 获取 响应转换器 ，具体看 3.1.1.2 小节
       responseConverter = createResponseConverter();
-      // 解析网络请求接口中方法的注解
+      // 解析网络请求接口中方法的注解，这里我们就只有一个 @GET 注解，具体看 3.1.1.3 小节
+      // 这里解析完可以拿到 Http 请求方法、请求体、相对 url、相对 url 中的参数
       for (Annotation annotation : methodAnnotations) {
         parseMethodAnnotation(annotation);
       }
@@ -440,21 +444,28 @@ create 方法中 继续往下走，会看到 return 一个 代理对象 Proxy �
         }
       }
 
-      // 解析当前方法的参数
+      // 解析当前方法的参数，这里就我们的例子而言
+      // parameterAnnotationsArray 就是 @Path ，所以这里的 length 就是 1
       int parameterCount = parameterAnnotationsArray.length;
       parameterHandlers = new ParameterHandler<?>[parameterCount];
       for (int p = 0; p < parameterCount; p++) {
+        // parameterTypes 是参数类型，就本例而言是 String
         Type parameterType = parameterTypes[p];
         if (Utils.hasUnresolvableType(parameterType)) {
           throw parameterError(p, "Parameter type must not include a type variable or wildcard: %s",
               parameterType);
         }
 
+        // 拿到第一个参数的 注解数组
         Annotation[] parameterAnnotations = parameterAnnotationsArray[p];
         if (parameterAnnotations == null) {
           throw parameterError(p, "No Retrofit annotation found.");
         }
-
+        // 解析参数
+        // p : 0
+        // parameterType : String
+        // parameterAnnotations : 虽然是数组，但是就一个元素 @Path
+        // 这个 parseParameter 就不分析了，大家自己看看源码就清楚了，无非就是构建 ParameterHandler 数组，而这个 ParameterHandler 其实就是负责解析 API 定义时每个方法的参数，并在构造 HTTP 请求时设置参数
         parameterHandlers[p] = parseParameter(p, parameterType, parameterAnnotations);
       }
       // 解析完方法中参数的注解后，做校验
@@ -475,7 +486,7 @@ create 方法中 继续往下走，会看到 return 一个 代理对象 Proxy �
     }
 ```
 
-###### 3.1.1.1 createCallAdapter ()
+##### 3.1.1.1 createCallAdapter ()
 ```
   private CallAdapter<T, R> createCallAdapter() {
       // 拿到网络请求接口里方法的返回值类型，在我们的例子中会返回如下类型
@@ -515,7 +526,7 @@ create 方法中 继续往下走，会看到 return 一个 代理对象 Proxy �
     checkNotNull(returnType, "returnType == null");
     checkNotNull(annotations, "annotations == null");
 
-    // callAdapterFactories 是一个 ArrayList 对象，里面存放着一个 ExecutorCallAdapterFactory 对象 ，这个是在 Retrofit Builder 的时候创建的。大家可以回过头去看看。 这里的 skipPast 是null， 所以 indexOf 肯定返回的 -1， 所以这里 start = 0
+    // callAdapterFactories 是一个 ArrayList 对象，里面存放着一个 ExecutorCallAdapterFactory 对象 ，这个是在 Retrofit Builder 的时候创建的，也就是我们上面所说的生产 CallAdapter 的地方，大家可以回过头去看看。 这里的 skipPast 是null， 所以 indexOf 肯定返回的 -1， 所以这里 start = 0
     int start = callAdapterFactories.indexOf(skipPast) + 1;
     // 循环， 这里由于我们的 callAdapterFactories 只有一个 元素， 所以直接看 ExecutorCallAdapterFactory 的 get方法
     for (int i = start, count = callAdapterFactories.size(); i < count; i++) {
@@ -571,31 +582,228 @@ create 方法中 继续往下走，会看到 return 一个 代理对象 Proxy �
 ```
 到这里，其实我们大概知道这个 CallAdapter 有什么用了，就是提供两个东西
 - 网络请求响应要返回的类型 responseType
-- retrofit2.Call< T >  ，注意这里不是 okhttp3 下的 Call ，这里暂不深究，因为我们不要忘了现在在做什么，我们现在是在获取 ServiceMethod 中的 callAdapter 变量值。所以看到这里返回了一个 CallAdapter 对象即可。
+- retrofit2.Call< T >  ，注意这里不是 okhttp3 下的 Call ，这里暂不深究。
+
+因为我们不要忘了现在在做什么，我们现在是在获取 ServiceMethod 中的 callAdapter 变量值。所以看到这里返回了一个 CallAdapter 对象即可。
+
+
+##### 3.1.1.2 createResponseConverter ()
+这里个方法是获取 响应转换器， 就是把网络请求得到的响应数据转换成相应的格式。
+
+```
+  private Converter<ResponseBody, T> createResponseConverter() {
+      // 拿到方法上所有的注解，在我们的例子中就只有 @GET 注解
+      Annotation[] annotations = method.getAnnotations();
+      // 这里的 responseType 就是上面我们得到的 List<Integer>
+      try {
+        return retrofit.responseBodyConverter(responseType, annotations);
+      } catch (RuntimeException e) { // Wide exception range because factories are user code.
+        throw methodError(e, "Unable to create converter for %s", responseType);
+      }
+    }
+```
+这里想必大家也知道套路了，跟获取 CallAdapter 是一样的，代码就不贴了，代码里同样是循环遍历 Retrofit 里的 converterFactories 变量。而这个 converterFactories 在我们的例子中是没有设置转换器的，所以它也只有一个默认的元素，即 BuiltInConverters 。 那么我们直接查看 它的 responseBodyConverter 方法。
+
+```
+ final class BuiltInConverters extends Converter.Factory {
+  // 注意这里的参数，别忘了到底是什么
+  // type : 就是我们的 responseType ，即 List<Integer>
+  // annotations : 这里我们方法的注解只有一个，所以就是 @GET
+  @Override
+  public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations,
+      Retrofit retrofit) {
+    if (type == ResponseBody.class) {
+      return Utils.isAnnotationPresent(annotations, Streaming.class)
+          ? StreamingResponseBodyConverter.INSTANCE
+          : BufferingResponseBodyConverter.INSTANCE;
+    }
+    if (type == Void.class) {
+      return VoidResponseBodyConverter.INSTANCE;
+    }
+    return null;
+  }
+```
+通过这里我们可以知道，其实它会返回 null 。 所以我们 **ServiceMethod 中的 Builder 中的 responseConverter 变量就等于 null 。**
 
 
 
 
+##### 3.1.1.3 parseMethodAnnotation ()
+我们来看看 解析方法注解 ，注意我们例子中这个方法里传的参数是 @GET 注解
+```
+   private void parseMethodAnnotation(Annotation annotation) {
+      if (annotation instanceof DELETE) {
+        parseHttpMethodAndPath("DELETE", ((DELETE) annotation).value(), false);
+      } else if (annotation instanceof GET) {
+        //我们这里是 GET 注解，所以进这个方法
+        parseHttpMethodAndPath("GET", ((GET) annotation).value(), false);
+      } else if (annotation instanceof HEAD) {
+        parseHttpMethodAndPath("HEAD", ((HEAD) annotation).value(), false);
+        if (!Void.class.equals(responseType)) {
+          throw methodError("HEAD method must use Void as response type.");
+        }
+      }
+      // 省略后续代码，后续还有很多其他类型的判断
+    }
 
 
+   // 这里的三个参数的值
+   // httpMethod : GET
+   // value : users/{user}/repos
+   // hasBody : false
+   private void parseHttpMethodAndPath(String httpMethod, String value, boolean hasBody) {
+      // 此处判断 httpMethod 的值是否存在，说明只允许一个 HTTP 方法存在
+      if (this.httpMethod != null) {
+        throw methodError("Only one HTTP method is allowed. Found: %s and %s.",
+            this.httpMethod, httpMethod);
+      }
+      this.httpMethod = httpMethod;
+      this.hasBody = hasBody;
 
+      if (value.isEmpty()) {
+        return;
+      }
+
+      // 下面是解析 value 中的 相对 url
+      // Get the relative URL path and existing query string, if present.
+      int question = value.indexOf('?');
+      if (question != -1 && question < value.length() - 1) {
+        // Ensure the query string does not have any named parameters.
+        String queryParams = value.substring(question + 1);
+        Matcher queryParamMatcher = PARAM_URL_REGEX.matcher(queryParams);
+        if (queryParamMatcher.find()) {
+          throw methodError("URL query string \"%s\" must not have replace block. "
+              + "For dynamic query parameters use @Query.", queryParams);
+        }
+      }
+
+      this.relativeUrl = value;
+      // 相对地址中的参数名字，这里不具体分析了，可以把结果告诉你
+      // 在我们的例子中 value = “users/{user}/repos”
+      // 这里的 relativeUrlParamNames 是个 Set<String> 集合 ，里面只有一个元素 user 。
+      this.relativeUrlParamNames = parsePathParameters(value);
+    }
+```
+至此，我们的 Builder 把 Http 的方法以及它的 Url 给分析完了，现在只剩 **参数解析了**。参数解析在 ServiceMethod 的 build 方法里已经讲过了 ，记得看注释。
+呼~ 终于讲完了 ServiceMethod 的构造。这么大篇幅，由此可以看出 ServiceMethod 这个类非常重要。现在来总结一下，我们究竟拥有了些什么。
+
+- callFactory : ExecutorCallAdapterFactory 实例
+- callAdapter : ExecutorCallAdapterFactory中的get 方法返回的 CallAdapter 实例
+- baseUrl ： HttpUrl 实例
+- responseConverter : 由于我们没设置，所以为 null
+- httpMethod : 字符串 GET
+- relativeUrl ：字符串 users/{user}/repos
+- headers : 没有设置 Headers ，所以为 null
+- contentType : null
+- hasBody : false
+- isFormEncoded : false
+- isMultipart : false
+- parameterHandlers : 就我们例子而已，该数组有一个元素，Path 对象，它是 ParameterHandler 抽象类里的一个静态内部类。
+
+由此可以看出，**ServiceMethod 对象包含了访问网络的所有基本信息。**
+
+好吧，接下来还是得继续前行，别忘了，我们构建 ServiceMethod 只是在 invoke 方法内，并且这还只是第一步。接下来看第二步。
+
+#### 3.2 `OkHttpCall<Object> okHttpCall = new OkHttpCall<>(serviceMethod, args);`
+
+这里是 new 一个 OkHttpCall 对象，这个 OkHttpCall 是 Retrofit 的 Call，它里面就是做请求的地方，会有 request、enqueue 等同步、异步请求方法，但是在这里面真正执行请求的是 okhttp3.Call ，即把请求委托给 okHttp 去执行。下面简要看看它的构造方法和一些成员变量吧，因为这里只是 new 操作，所以暂时不分析其余方法，用到的时候再看。
+```
+ final class OkHttpCall<T> implements Call<T> {
+  // 含有所有网络请求参数信息的 ServiceMethod
+  private final ServiceMethod<T, ?> serviceMethod;
+  private final @Nullable Object[] args;
+
+  private volatile boolean canceled;
+
+  // 实际进行网络请求的 Call
+  private @Nullable okhttp3.Call rawCall;
+  @GuardedBy("this") // Either a RuntimeException, non-fatal Error, or IOException.
+  private @Nullable Throwable creationFailure;
+  @GuardedBy("this")
+  private boolean executed;
+
+  // 传入配置好的 ServiceMethod 和 请求参数
+  OkHttpCall(ServiceMethod<T, ?> serviceMethod, @Nullable Object[] args) {
+    this.serviceMethod = serviceMethod;
+    this.args = args;
+  }
+```
+
+这样就把 OkHttpCall 给构建好了，接下来看第三步。
+
+#### 3.3 `return serviceMethod.adapt(okHttpCall);`
+直接上代码
+```
+ T adapt(Call<R> call) {
+    return callAdapter.adapt(call);
+  }
+```
+这是 前面构建好的 ServiceMethod 中的 adapt 方法，会去调用 callAdapter 的 adapt 方法，我们知道 ServiceMethod 中的 callAdapter 是 ExecutorCallAdapterFactory中的get 方法返回的 CallAdapter 实例。而这个实例的 adapt 方法会返回一个 ExecutorCallbackCall 对象。
+```
+ <!-- ExecutorCallAdapterFactory 内部类 -->
+ static final class ExecutorCallbackCall<T> implements Call<T> {
+    // 这里在之前创建ExecutorCallAdapterFactory时，就知道它的值了，就是 MainThreadExecutor ，用来切换线程的
+    final Executor callbackExecutor;
+    // 这就是刚刚传进来的 OkHttpCall
+    final Call<T> delegate;
+
+    ExecutorCallbackCall(Executor callbackExecutor, Call<T> delegate) {
+      this.callbackExecutor = callbackExecutor;
+      this.delegate = delegate;
+    }
+```
+
+到这里为止，我们已经成功的返回了一个 `Call<List<Integer>>` 
+
+
+### 4. 调用 Call 的 enqueue
+趁热打铁，我们执行异步请求，看看怎样切换线程的。
+```
+ <!-- ExecutorCallbackCall 内部 -->
+ @Override
+ public void enqueue(final Callback<T> callback) {
+      checkNotNull(callback, "callback == null");
+
+      // 真正的 Call 去执行请求
+      delegate.enqueue(new Callback<T>() {
+        @Override public void onResponse(Call<T> call, final Response<T> response) {
+          // 回调后 利用 MainThreadExecutor 中的 Handler 切换到主线程中去。
+          callbackExecutor.execute(new Runnable() {
+            @Override public void run() {
+              if (delegate.isCanceled()) {
+                // Emulate OkHttp's behavior of throwing/delivering an IOException on cancellation.
+                callback.onFailure(ExecutorCallbackCall.this, new IOException("Canceled"));
+              } else {
+                callback.onResponse(ExecutorCallbackCall.this, response);
+              }
+            }
+          });
+        }
+
+        @Override public void onFailure(Call<T> call, final Throwable t) {
+          callbackExecutor.execute(new Runnable() {
+            @Override public void run() {
+              callback.onFailure(ExecutorCallbackCall.this, t);
+            }
+          });
+        }
+      });
+    }
+```
+可以看到是 delegate 执行了 enqueue 操作，而 delegate 就是我们的 OkHttpCall ，在 OkHttpCall 里的 enqueue 方法是这样工作的。
+通过 `okhttp3.Call call = serviceMethod.toCall(args);` 构建一个真正执行请求的 Call ，即把请求交给 okhttp 去完成。而构建一个 Call 利用到了 ServiceMethod 中的 ParameterHandler 对象，这个对象是用来处理参数的。 它会把具体参数的值与 RequestBuilder 绑定起来。当然也用到了 ServiceMethod 自己，ServiceMethod 类似请求响应的大管家。
+
+别忘了拿到响应后，在 okhttp3.Callback 中会去调用 `response = parseResponse(rawResponse);` 将响应转换成自己想要的格式，即定义的 Converter 。
+
+
+到这里终于结束了，当然在响应解析这里还有许多没讲，但是 Retrofit 一个主体的流程已经走完了。真累。。。
+没啥总结的了，这篇文章只是用来跟踪具体的源码，具体到每一句代码都有解释。至于 Retrofit 的设计思路，别的文章都有讲。
+总之，在自己跟着分析完这么一大段后，已经对 Retrofit 相当熟悉了，遇到问题，相信也可以定位到源码中去找到问题的根源，然后解决，至此，目标已达成。
 
 
 
 **参考**
+https://blog.csdn.net/carson_ho/article/details/73732115
+https://www.jianshu.com/p/fb8d21978e38
 https://blog.csdn.net/justloveyou_/article/details/72783008
 https://imququ.com/post/four-ways-to-post-data-in-http.html
-
-
-
-
-//---------------------------------
-
-retrofit2.Call<java.util.List<java.lang.Integer>>
-true
-interface retrofit2.http.GET
-@retrofit2.http.GET(value=users/{user}/repos)
-retrofit2.Call
-true
------------------------------------------
-java.util.List<java.lang.Integer>
