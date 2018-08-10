@@ -30,7 +30,49 @@
 - ViewGroup 每次事件分发，都会调用 onInterceptTouchEvent 询问是否拦截事件。
 - 如果 ViewGroup.onIterceptTouchEvent 返回 true 代表拦截此事件。返回 true 的情况有两种（一、自己手动重写返回 true。 二、无 View接收事件，即点击空白处时）。
 - 当 ViewGroup 拦截事件时，会调用 ViewGroup 父类的 dispatchTouchEvent 即 View.dispatchTouchEvent。 然后会自己处理该事件，**调用自身的 onTouch -> onTouchEvent ->performClick -> onClick**，这是 View 的调用过程，具体看 View 的事件分发。
-- 当 ViewGroup 不拦截事件时，会找到被点击的相应子 View 控件，然后调用子 View 控件的 dispatchTouchEvent，这个时候也就实现了事件从 ViewGroup 到 View 的传递。
+- 当 ViewGroup 不拦截事件时，会循环子View，找到被点击的相应子 View 控件，然后调用子 View 控件的 dispatchTouchEvent，这个时候也就实现了事件从 ViewGroup 到 View 的传递。
+
+##### 2.2.1 ViewGroup 怎么判断哪个子 View 被点击了
+循环子 View 中，有这么一段代码，用来判断当前 View 是否被点击了
+```
+     //child可接受触摸事件：是指child是可见的(VISIBLE)；或者虽然不可见，但是位于动画状态。
+	if (!canViewReceivePointerEvents(child)
+            || !isTransformedTouchPointInView(x, y, child, null)) {
+                 ev.setTargetAccessibilityFocus(false);
+                 continue;
+       }
+```
+这里面有两个方法用来判断， `canViewReceivePointerEvents` 和 `isTransformedTouchPointInView`
+首先是判断当前 View 是否能接收到 PointerEvents ，如果不能接收到，那就直接 continue 循环下一个了。
+
+如果上面判断是可以接受触摸事件的，那么就会去判断触摸坐标(x,y)是否在 child 的可视范围之内。
+接下来具体看看 `isTransformedTouchPointInView`
+```
+	protected boolean isTransformedTouchPointInView(float x, float y, View child,
+            PointF outLocalPoint) {
+        // 首先 new 一个 float 数组，用来存放点击的 x、y 坐标
+        final float[] point = getTempPoint();
+        point[0] = x;
+        point[1] = y;
+        transformPointToViewLocal(point, child);
+        //这是用来判断点击是否在 View 内的具体方法。
+        final boolean isInView = child.pointInView(point[0], point[1]);
+        if (isInView && outLocalPoint != null) {
+            outLocalPoint.set(point[0], point[1]);
+        }
+        return isInView;
+    }
+```
+
+```
+	final boolean pointInView(float localX, float localY) {
+        return localX >= 0 && localX < (mRight - mLeft)
+                && localY >= 0 && localY < (mBottom - mTop);
+    }
+```
+通过这个方法可以看到，View 是怎样判断的。
+- localX、localY ： 是通过 ev.getX 和  ev.getY 拿到的，在 View 基础篇有讲过，这两个方法拿到的是相对当前 View 的坐标。
+- mRight、mLeft、mBottom、mTop ：View 的四个顶点，具体可复习 [View 基础篇](https://blog.csdn.net/u014306335/article/details/81140580)。
 
 
 #### 2.3 View 事件分发机制
