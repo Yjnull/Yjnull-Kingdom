@@ -203,11 +203,45 @@ public class Solution {
 
         return sb.toString();
     }
+
+
+    public static TreeNode constructFromPrePost(int[] pre, int[] post) {
+        return dfs(pre, post, 0, pre.length - 1, 0, post.length - 1);
+    }
+
+    private static TreeNode dfs(int[] pre, int[] post, int preS, int preE, int postS, int postE) {
+        TreeNode root = new TreeNode(pre[preS]);
+        if(preS == preE) return root;
+
+        int leftIndex = preS + 1;
+        int rightIndex = postE - 1;
+
+        if (pre[leftIndex] == post[rightIndex]) {
+            root.left = dfs(pre, post, leftIndex, preE, postS, rightIndex);
+            return root;
+        }
+
+        int rightIdx = 0;
+
+        for(int i = preS; i <= preE; i++) {
+            if(pre[i] == post[rightIndex]) {
+                rightIdx = i;
+                break;
+            }
+        }
+
+        int len = rightIdx - leftIndex;
+        root.left = dfs(pre, post, leftIndex, rightIdx - 1, postS, postS + len - 1);
+        root.right = dfs(pre, post, rightIdx, preE, postS + len, postE - 1);
+
+        return root;
+    }
     
     public static void main(String[] args) {
         //System.out.println(trap(new int[]{2, 0, 2}));
         //System.out.println(toGoatLatin("I speak Goat Latin"));
         //System.out.println(largeGroupPositions("abcdddeeeeaabbbcd"));
-        System.out.println(maskPII("(3906)2 07143 711"));
+        //System.out.println(maskPII("(3906)2 07143 711"));
+        System.out.println(constructFromPrePost(new int[]{2,1}, new int[]{1,2}));
     }
 }
