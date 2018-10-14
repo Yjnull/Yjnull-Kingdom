@@ -10,7 +10,7 @@
 
 **作用：** Handler 的主要作用是将一个 **任务** 切换到 **Handler 所在的线程中**去执行。
 
-而 Android 规定访问 UI 这个 **任务** 只能在主线程中进行，如果在子线程中访问 UI，就会抛出异常。每次操作 UI 时会进行验证，这个验证是通过 ViewRootImpl 类 里面的 checkThread 方法 完成的。
+而 Android 规定访问 UI 这个 **任务** 只能在主线程中进行，如果在子线程中访问 UI，就会抛出异常。每次操作 UI 时会进行验证，这个验证是通过 ViewRootImpl 类里面的 checkThread 方法 完成的。
 ```
 void checkThread() {
         if (mThread != Thread.currentThread()) {
@@ -26,7 +26,7 @@ void checkThread() {
 
 **Q 为什么不允许在子线程中访问 UI？**
 
-因为 Android 的 UI 控件**不是线程安全的**，如果在 **多线程中并发访问 **可能会导致 UI 控件处于不可预期的状态。
+因为 Android 的 UI 控件**不是线程安全的**，如果在 **多线程中并发访问** 可能会导致 UI 控件处于不可预期的状态。
 
 **Q 那为什么不对 UI 控件的访问加上 锁机制呢？**
 
@@ -125,7 +125,7 @@ public class ThreadLocalSample {
 
 ##### 3.1 ThreadLocal.Values
 
-ThreadLoacal 内部有个 静态内部类 Values，Values 内部维护的是一个 Object [ ] ，当我们通过 ThreadLoacal 进行 set() 方法调用时，实际是在 Values.put 。 当然不同版本的api，实现不一样，比如最新版本把Values改为了ThreadLocalMap，并且内部维护的是 Entry [] 数组。但是原理都一样，这里就 Values 分析简单点。
+ThreadLoacal 内部有个 静态内部类 Values，Values 内部维护的是一个 Object [ ] ，当我们通过 ThreadLoacal 进行 set() 方法调用时，实际是在 Values.put 。 当然不同版本的api，实现不一样，比如最新版本把Values改为了ThreadLocalMap，并且内部维护的是 Entry [ ] 数组。但是原理都一样，这里就 Values 分析简单点。
 
 ```
 /**
