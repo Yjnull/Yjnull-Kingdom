@@ -36,7 +36,7 @@ public PathClassLoader(String dexPath, String libraryPath,
     super(dexPath, null, libraryPath, parent);
 }
 ```
-- **dexPath：** 包含 dex 的 jar 文件或 apk 文件的路径集，多个以文件分隔符分隔，默认是 " : "
+- **dexPath：** 包含 dex 的 jar 文件或 apk 文件的路径集，多个以文件分隔符分隔，默认是 **:**
 - **libraryPath：** 包含 C/C++ 库的路径集，多个同样以文件分隔符分隔，可以为空
 
 
@@ -49,7 +49,7 @@ public DexClassLoader(String dexPath, String optimizedDirectory,
     super(dexPath, new File(optimizedDirectory), libraryPath, parent);
 }
 ```
-- **dexPath：** 包含 class.dex 的 apk、jar 文件路径 ，多个用文件分隔符(默认是 ：)分隔
+- **dexPath：** 包含 class.dex 的 apk、jar 文件路径 ，多个用文件分隔符 (默认是 **:** ) 分隔
 - **optimizedDirectory：** 用来缓存优化的 dex 文件的路径，即从 apk 或 jar文件中提取出来的 dex 文件。该路径不能为空，且应该是应用私有的，有读写权限的路径（实际上也可以使用外部存储空间，但是这样的话就存在代码注入的风险）
 - **libraryPath：** 存储 C/C++ 库文件的路径集
 - **parent：** 父类加载器，遵从双亲委托模型
