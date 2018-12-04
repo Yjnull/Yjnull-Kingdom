@@ -178,7 +178,7 @@ private static InternalHandler sHandler;
 ```
 
 然后在构造函数中可以看到这里对 mHandler 赋值，其中会调用 getMainHandler。 
-我们一般调用的都是那个 无参的构造函数，这里会传null给有参的那个， 其中会判断，如果 callbackLooper == null 就会去调用 getMainHandler()
+我们一般调用的都是那个 无参的构造函数，这里会传null给有参的那个， 其中会判断，如果 `callbackLooper == null` 就会去调用 getMainHandler()
 ```
 	public AsyncTask() {
         this((Looper) null);
@@ -241,12 +241,12 @@ public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec
     }
 ```
 
-从上述代码可以知道， executeOnExecutor 内部会调用 onPreExecute()，这也叫解释了为什么 **execute 方法必须在主线程中调用**，只有在主线程中调用， onPreExecute() 方法才会运行在 主线程中。
+从上述代码可以知道， executeOnExecutor 内部会调用 onPreExecute()，这也就解释了为什么 **execute 方法必须在主线程中调用**，只有在主线程中调用， onPreExecute() 方法才会运行在 主线程中。
 
 
 ##### 3.4 一个 AsyncTask 对象只能执行一次，即只能调用一次 execute 方法，否则会报运行时异常
 
-这个问题就很好解答了，在3.3里面的 executeOnExecutor 方法内部很明确， 如果 mStatus != Status.PENDING，就会抛出异常。而我们执行一个任务的时候会把 mStatus = Status.RUNNING ，因此这个疑惑也解决了。
+这个问题就很好解答了，在3.3里面的 executeOnExecutor 方法内部很明确， 如果 `mStatus != Status.PENDING`，就会抛出异常。而我们执行一个任务的时候会把 `mStatus = Status.RUNNING` ，因此这个疑惑也解决了。
 
 当然 AsyncTask 还有很多可以讲的，比如它内部的 线程池，默认是使用 SerialExecutor 串行执行的，还有 InternalHandler 的 handleMessage ， 以及它内部的 FutureTask 和 WorkerRunnable 等。 这些只要看源码就知道了。 整个 AsyncTask 并不是特别难， 所以它是一种很好用的 **轻量级的异步任务类。**
 
