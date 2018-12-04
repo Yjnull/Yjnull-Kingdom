@@ -150,12 +150,16 @@ void checkThread() {
 
 14. AIDL
 15. android8.0 可以用文件进行进程通信嘛
+	**答:**
+    [Android 7.0 行为变更 Hongyang](https://blog.csdn.net/lmj623565791/article/details/72859156)
+    [Android 7.0 行为变更 官方](https://developer.android.com/about/versions/nougat/android-7.0-changes)
+
 16. 两个 ListView，一个竖滑，一个横向滑动，如何解决滑动冲突
 17. 京东分类页面，两个滑动如何实现的
 18. 数据库框架有用过吗，ormLite，greenDAO
 19. 自定义 view
 20. 微信上的下拉出现小程序列表是怎么做到的
-21. LruCache 原理 通过LinkedHashMap实现
+21. LruCache 原理 通过 LinkedHashMap 实现
 
 
 
