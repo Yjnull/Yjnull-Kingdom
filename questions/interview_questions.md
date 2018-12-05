@@ -153,6 +153,7 @@ void checkThread() {
 	**答:**
     [Android 7.0 行为变更 Hongyang](https://blog.csdn.net/lmj623565791/article/details/72859156)
     [Android 7.0 行为变更 官方](https://developer.android.com/about/versions/nougat/android-7.0-changes)
+    [官方已经在 API23 后废除了 SharedPreference 的多进程模式](https://www.jianshu.com/p/cc40ab07c14e)
 
 16. 两个 ListView，一个竖滑，一个横向滑动，如何解决滑动冲突
 17. 京东分类页面，两个滑动如何实现的
