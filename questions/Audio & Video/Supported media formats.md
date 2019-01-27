@@ -1,4 +1,5 @@
-# Supported media formats (支持的媒体格式)
+
+#Supported media formats (支持的媒体格式)
 
 > **译:** https://developer.android.com/guide/topics/media/media-formats
 
