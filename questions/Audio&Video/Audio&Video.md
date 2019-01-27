@@ -7,7 +7,7 @@
 
 ## Documentation
 
-### [Supported media formats 支持的媒体格式](/android-interview-planing/questions/Audio&Video/SupportedMediaFormats.md)
+### [Supported media formats 支持的媒体格式](SupportedMediaFormats.md)
 
 ### [Media app architecture overview 媒体架构预览]()
 
