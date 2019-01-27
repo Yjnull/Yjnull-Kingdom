@@ -1,6 +1,6 @@
 # Supported media formats (支持的媒体格式)
 
-> **译：**https://developer.android.com/guide/topics/media/media-formats
+> **译:** https://developer.android.com/guide/topics/media/media-formats
 
 > **media codec**（媒体编解码器）
 > **container**（容器）
@@ -82,5 +82,5 @@ The table below lists the Android media framework video encoding profiles and pa
 	- Protocol version 2 (Android 3.x)
 	- Not supported before Android 3.0
 
-> **Note: **HTTPS is not supported before Android 3.1
+> **Note:** HTTPS is not supported before Android 3.1
 
