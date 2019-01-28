@@ -33,7 +33,7 @@ session 可以从一个或多个 `media controller` 接收回调。这使你的 
 
 #### Media controller
 
-`media controller` 隔离了您的UI。您的UI代码仅与 `media controller` 通信，而不是与 player 本身通信。`media controller` 将传输控制动作转换为对 `media session` 的回调。每当会话状态改变时，它还从 `media session` 接收回调。这提供了一种自动更新关联 UI 的机制。`media controller` 一次只能连接一个 `media session`。
+`media controller` 隔离了您的 UI 。您的 UI 代码仅与 `media controller` 通信，而不是与 player 本身通信。`media controller` 将传输控制动作转换为对 `media session` 的回调。每当会话状态改变时，它还从 `media session` 接收回调。这提供了一种自动更新关联 UI 的机制。`media controller` 一次只能连接一个 `media session`。
 
 使用 `media controller` 和 `media session` 时，可以在运行时部署不同的接口或 player。您可以根据运行设备的功能，单独更改应用程序的外观或性能。
 
@@ -65,6 +65,7 @@ session 可以从一个或多个 `media controller` 接收回调。这使你的 
 ## Media apps and the Android audio 基础结构
 
 精心设计的媒体应用程序应与其他播放音频的应用程序 “很好地协同工作”。它应该准备好共享手机并与您设备上使用音频的其他应用程序合作。它还应响应设备上的硬件控制。
+
 ![plays-with-others](../../img/plays-with-others.png)
 
 [Controlling Audio Output](https://developer.android.com/guide/topics/media-apps/volume-and-earphones) 这一节中描述了所有这些行为。
@@ -76,15 +77,15 @@ session 可以从一个或多个 `media controller` 接收回调。这使你的 
 `media session` 和 `media controller` 的推荐实现是 [MediaSessionCompat](https://developer.android.com/reference/android/support/v4/media/session/MediaSessionCompat) 和 [MediaControllerCompat](https://developer.android.com/reference/android/support/v4/media/session/MediaControllerCompat)，它们在 [media-compat support library](https://developer.android.com/topic/libraries/support-library/features#media-playback) 中定义。
 它们取代了 Android 5.0（API级别21）中引入的早期版本的 `MediaSession` `和MediaController`。 `compat 类提供相同的功能`，但更容易开发您的应用程序，因为您只需要写入一个 API。该库通过将 `media session` 的方法转换为旧平台版本上的等效方法（如果可用）来处理向后兼容性。
 
-如果您已经有一个使用旧类的工作应用程序，我们建议您更新到 `compat类`。当您使用 `compat` 版本时，您可以删除对 [registerMediaButtonReceiver ( )](https://developer.android.com/reference/android/media/AudioManager#registerMediaButtonEventReceiver(android.content.ComponentName) 的所有调用以及 [RemoteControlClient](https://developer.android.com/reference/android/media/RemoteControlClient) 中的所有方法。
+如果您已经有一个使用旧类的工作应用程序，我们建议您更新到 `compat类`。当您使用 `compat` 版本时，您可以删除对 [registerMediaButtonReceiver ( )](https://developer.android.com/reference/android/media/AudioManager#registerMediaButtonEventReceiver(android.content.ComponentName)) 的所有调用以及 [RemoteControlClient](https://developer.android.com/reference/android/media/RemoteControlClient) 中的所有方法。
 
 ## Measuring performance（测量性能）
 
 在 Android 8.0（API 级别26）及更高版本中，getMetrics（）方法适用于某些 media classes 。它返回包含配置和性能信息的 [PersistableBundle](https://developer.android.com/reference/android/os/PersistableBundle) 对象，表示为属性和值的一个 map 。这些媒体类定义了getMetrics（）方法：
 
-- [MediaPlayer.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics()
-- [MediaRecorder.getMetrics](https://developer.android.com/reference/android/media/MediaRecorder#getMetrics(\))
-- [MediaCodec.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics()
-- [MediaExtractor.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics()
+- [MediaPlayer.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics())
+- [MediaRecorder.getMetrics](https://developer.android.com/reference/android/media/MediaRecorder#getMetrics())
+- [MediaCodec.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics())
+- [MediaExtractor.getMetrics](https://developer.android.com/reference/android/media/MediaPlayer#getMetrics())
 
 为每个实例单独收集度量标准，并持续实例的生命周期。如果没有可用的度量标准，则该方法返回 null 。返回的实际指标取决于类。
