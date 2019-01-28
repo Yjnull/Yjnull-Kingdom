@@ -7,7 +7,7 @@
 
 ## Documentation
 
-### [Supported media formats 支持的媒体格式](/questions/Audio&Video/SupportedMediaFormats.md)
+### [Supported media formats 支持的媒体格式](/questions/Audio&Video/Supported Media Formats.md)
 
 ### [Media app architecture overview 媒体架构预览]()
 
