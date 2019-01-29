@@ -57,3 +57,75 @@ public class MediaPlaybackService extends MediaBrowserServiceCompat {
     }
 }
 ```
+
+## Manage client connections
+
+`MediaBrowserService` 有两种处理客户端连接的方法： `onGetRoot()` 控制对服务的访问， `onLoadChildren()` provides the ability for a client to build and display a menu of the `MediaBrowserService`'s content hierarchy.
+
+#### Controlling client connections with onGetRoot()
+
+`onGetRoot()` 方法返回内容层次结构的根节点。如果方法返回 null，则拒绝连接。
+
+要允许客户端连接到你的服务并浏览其媒体内容，`onGetRoot()` 必须返回一个非空的 BrowserRoot，它是表示你的内容层次结构的 root ID 。
+
+要允许客户端在不浏览媒体内容的情况下连接到 `MediaSession`，`onGetRoot()` 仍必须返回非空的 BrowserRoot，但 root ID 应该表示空的内容层次结构。
+
+`onGetRoot()` 的典型实现可能如下所示：
+
+``` java
+@Override
+public BrowserRoot onGetRoot(String clientPackageName, int clientUid,
+    Bundle rootHints) {
+
+    // (Optional) Control the level of access for the specified package name.
+    // You'll need to write your own logic to do this.
+    if (allowBrowsing(clientPackageName, clientUid)) {
+        // Returns a root ID that clients can use with onLoadChildren() to retrieve
+        // the content hierarchy.
+        return new BrowserRoot(MY_MEDIA_ROOT_ID, null);
+    } else {
+        // Clients can connect, but this BrowserRoot is an empty hierachy
+        // so onLoadChildren returns nothing. This disables the ability to browse for content.
+        return new BrowserRoot(MY_EMPTY_MEDIA_ROOT_ID, null);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
