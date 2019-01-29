@@ -13,15 +13,15 @@
 
 #### [Building a media browser service](https://developer.android.com/guide/topics/media-apps/audio-app/building-a-mediabrowserservice)
 
-　　如何创建一个包含 `media session` ，管理客户端连接，已经在播放音频时成为一个前台服务的 `media browser service`。
+　　如何创建一个  `media browser service` 。它包含 `media session` ；它能管理客户端连接；它还能在播放音频时成为一个前台服务。
 
 #### [Building a media browser client](https://developer.android.com/guide/topics/media-apps/audio-app/building-a-mediabrowser-client)
 
-　　如何创建一个包含 UI 和 `media controller` 的 `media browser client` ，以及与 `media browser service` 进行连接和通信。
+　　如何创建一个 `media browser client Activity`。 它包含 UI 和 `media controller` ，并且它能与 `media browser service` 进行连接和通信。
 
 #### [Media session callbacks](https://developer.android.com/guide/topics/media-apps/audio-app/mediasession-callbacks)
 
-　　描述 `media session callback` 方法如何管理 `media session`，`media browser service` 以及其他应用程序组件（如 notifications 和 broadcast receivers）。
+　　描述 `media session callback` 方法如何管理 `media session`、`media browser service` 以及其他应用程序组件（如 notifications 和 broadcast receivers）。
 
 #### [android-MediaBrowserSevice](https://github.com/googlesamples/android-MediaBrowserService/)
 
