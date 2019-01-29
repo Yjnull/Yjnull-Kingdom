@@ -25,7 +25,7 @@
 
 [PlaybackStateCompat](https://developer.android.com/reference/android/support/v4/media/session/PlaybackStateCompat) 类描述了播放器的当前操作状态。这包括：
 - The transport state （播放器是否正在播放/暂停/缓冲等。请参阅 [getState()](https://developer.android.com/reference/android/support/v4/media/session/PlaybackStateCompat#getState()) ）
-- 合适的时候会出现 错误代码和可选错误消息。（请参阅 [getErrorCode()](https://developer.android.com/reference/android/support/v4/media/session/PlaybackStateCompat#getErrorCode()) 和下面的 [States and errors](# States and errors)）
+- 合适的时候会出现 错误代码和可选错误消息。（请参阅 [getErrorCode()](https://developer.android.com/reference/android/support/v4/media/session/PlaybackStateCompat#getErrorCode()) 和下面的 [States and errors](#states-and-errors)）
 - The player position
 - 可在当前状态下处理的有效 controller action
 
