@@ -222,9 +222,22 @@ builder
 startForeground(id, builder.build());
 ```
 
+使用 MediaStyle 通知时，请注意这些 NotificationCompat 设置的行为：
+- 当你使用 [setContentIntent](https://developer.android.com/reference/android/app/Notification.Builder#setContentIntent(android.app.PendingIntent)) 时，你的服务会在单击通知时自动启动，这是一个方便的功能。
 
+- 在像锁屏这样 “不受信任(untrusted)” 的情况下，通知内容的默认可见性是 [VISIBILITY_PRIVATE](https://developer.android.com/reference/android/app/Notification#VISIBILITY_PRIVATE)。你可能希望在锁屏上看到 transport controls，因此 [VISIBILITY_PUBLIC](https://developer.android.com/reference/android/app/Notification#VISIBILITY_PUBLIC) 是最佳选择。
 
-<br><br><br><br><br><br><br><br><br><br><br><br>
+- 设置背景颜色时要小心。在 Android5.0 或更高版本的普通通知中。颜色仅用于 small app icon 的背景。但对于 Android7.0 之前的 MediaStyle 通知，颜色会用于整个通知背景。测试你的背景颜色，避免使用极其明亮的颜色。
+
+只有在使用 `NotificationCompat.MediaStyle` 时，这些设置才可用：
+- 使用 [setMediaSession()](http://) 将通知与你的 session 相关联。这允许第三方应用和配套设备访问和控制 session。
+
+- 使用 [setShowActionsInCompactView()](http://) 在通知的标准大小的 contentView 中可以通过使用 添加最多3个操作。（上面的示例代码指定了暂停按钮。）
+
+- 在 Android5.0（API 级别为21）及更高版本中，一旦服务不再在前台运行，你可以滑动通知以停止播放器。你不能在早期的安卓版本中执行此操作。要允许用户在 Android5.0 之前删除通知并停止播放，你可以通过调用 [setShowCancelButton](http://) 和 [setCancelButtonIntent](http://) 在通知的右上角添加取消按钮。
+
+添加暂停和取消按钮时，you'll need a PendingIntent to attach to the playback action.
+[MediaButtonReceiver.buildMediaButtonPendingIntent()](http://) 方法完成将 PlaybackState 操作转换为 PendingIntent 的工作。
 
 
 
