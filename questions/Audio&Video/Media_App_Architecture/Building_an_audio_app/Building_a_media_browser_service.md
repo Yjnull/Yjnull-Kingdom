@@ -12,7 +12,7 @@
 </service>
 ```
 
-> **Note:** `MediaBrowserService` 的推荐实现是 `MediaBrowserServiceCompat`。这是在 media-compat 支持库中定义的。在整个页面中，术语 “MediaBrowserService” 指的是 `MediaBrowserServiceCompat` 的实例。
+> **Note:** `MediaBrowserService` 的推荐实现是 `MediaBrowserServiceCompat`。这是在 media-compat 支持库中定义的。在本文中，术语 “MediaBrowserService” 指的是 `MediaBrowserServiceCompat` 的实例。
 
 
 ## Initialize the media session
