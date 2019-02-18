@@ -7,7 +7,7 @@
 
 MediaBrowser 执行两个重要的功能: 它连接到 MediaBrowserService，并在连接时为你的 UI 创建 MediaController。
 
-> **Note:** MediaBrowser 的推荐实现是 [MediaBrowserCompat](http://) ，该类被定义在 [Media-Compat support library](http://) 中。在本文中 术语 “MediaBrowser” 指的是 MediaBrowserCompat 的实例。
+> **Note:** MediaBrowser 的推荐实现是 [MediaBrowserCompat](https://developer.android.com/reference/android/support/v4/media/MediaBrowserCompat) ，该类被定义在 [Media-Compat support library](https://developer.android.com/topic/libraries/support-library/features#v4-media-compat) 中。在本文中 术语 “MediaBrowser” 指的是 MediaBrowserCompat 的实例。
 
 ## Connect to the MediaBrowserService
 
@@ -61,17 +61,107 @@ public class MediaPlayerActivity extends AppCompatActivity {
 }
 ```
 
+## Customize MediaBrowserCompat.ConnectionCallback
+
+当你的 Activity 构造 MediaBrowserCompat 时，你必须创建 ConnectionCallback 的实例。修改其 `onConnected` 方法，检索来自`MediaBrowserService` 的 media session token，并使用该 token 创建 `MediaControllerCompat`。
+
+使用便捷方法 [MediaControllerCompat.setMediaController()](https://developer.android.com/reference/android/support/v4/media/session/MediaControllerCompat#setMediaController(android.app.Activity,%20android.support.v4.media.session.MediaControllerCompat)) 来保存 controller 的引用。这样可以处理 [media buttons](https://developer.android.com/guide/topics/media-apps/mediabuttons) 。它还允许你在构建 transport controls 时调用 [MediaControllerCompat.getMediaController()](https://developer.android.com/reference/android/support/v4/media/session/MediaControllerCompat#getMediaController()) 来获取 controller。
+
+下面的代码示例展示了如何修改 `onConnected()` 方法。
+
+```java
+private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
+  new MediaBrowserCompat.ConnectionCallback() {
+    @Override
+    public void onConnected() {
+
+      // Get the token for the MediaSession
+      MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
+
+      // Create a MediaControllerCompat
+      MediaControllerCompat mediaController =
+        new MediaControllerCompat(MediaPlayerActivity.this, // Context
+        token);
+
+      // Save the controller
+      MediaControllerCompat.setMediaController(MediaPlayerActivity.this, mediaController);
+
+      // Finish building the UI
+      buildTransportControls();
+    }
+
+    @Override
+    public void onConnectionSuspended() {
+      // The Service has crashed. Disable transport controls until it automatically reconnects
+    }
+
+    @Override
+    public void onConnectionFailed() {
+      // The Service has refused our connection
+    }
+  };
+```
+
+## Connect your UI to the media controller
+
+在上面的 `ConnectionCallback` 示例代码中，包含对 `buildTransportControls()` 的调用以充实你的 UI。你需要为控制播放器的 UI 元素设置 `onClickListeners`。为每个元素选择适当的 [MediaControllerCompat.TransportControls](https://developer.android.com/reference/android/support/v4/media/session/MediaControllerCompat.TransportControls) 方法。
+
+你的代码看起来像这样，每个按钮都有一个 onClickListener：
+
+```java
+void buildTransportControls()
+{
+  // Grab the view for the play/pause button
+  playPause = (ImageView) findViewById(R.id.play_pause);
+
+  // Attach a listener to the button
+  playPause.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      // Since this is a play/pause button, you'll need to test the current state
+      // and choose the action accordingly
+
+      int pbState = MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getPlaybackState().getState();
+      if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+        MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().pause();
+      } else {
+        MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().play();
+      }
+  });
+
+  MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
+
+  // Display the initial state
+  MediaMetadataCompat metadata = mediaController.getMetadata();
+  PlaybackStateCompat pbState = mediaController.getPlaybackState();
+
+  // Register a Callback to stay in sync
+  mediaController.registerCallback(controllerCallback);
+}
+}
+```
+
+The TransportControls methods send callbacks to your service's media session. Make sure you've defined a corresponding [MediaSessionCompat.Callback](https://developer.android.com/reference/android/support/v4/media/session/MediaSessionCompat.Callback) method for each control.
 
 
+## Stay in sync with the media session
 
+UI 应显示 media session 的当前状态，如其 PlaybackState 和 Metadata 所述。当你创建 transport controls 时，你可以获取 session 的当前状态，在 UI 中显示它，并根据状态及其可用的操作 启用和禁用 transport controls。
 
+为了在每次状态或元数据发生改变时，能从 media session 接收回调。请定义一个 [MediaControllerCompat.Callback](http://) ：
 
+```java
+MediaControllerCompat.Callback controllerCallback =
+  new MediaControllerCompat.Callback() {
+    @Override
+    public void onMetadataChanged(MediaMetadataCompat metadata) {}
 
+    @Override
+    public void onPlaybackStateChanged(PlaybackStateCompat state) {}
+  };
+```
 
-
-
-
-
+在构建 transport controls 注册回调（请参阅上面的 `buildTransportControls()`），并在 Activity stop 时取消注册（在 Activity 的 `onStop()` 生命周期方法中）
 
 
 
