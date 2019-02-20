@@ -1,5 +1,8 @@
 # Audio app overview
 
+> [GitHub 链接](https://github.com/Yjnull/android-interview-planing/blob/master/questions/Audio%26Video/Media_App_Architecture/Building_an_audio_app/Audio_app_overview.md)
+> 译：https://developer.android.com/guide/topics/media-apps/audio-app/building-an-audio-app
+
 音频应用程序的首选体系结构是 client/server 设计。player 及其 media session 在 `MediaBrowserService` 内实现，UI 和 media controller 与 `MediaBrowser` 一起存在于 Activity 中。
 
 ![audio-app](../../../img/audio-app.png)
