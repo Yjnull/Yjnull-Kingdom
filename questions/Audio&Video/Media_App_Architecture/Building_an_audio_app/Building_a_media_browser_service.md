@@ -1,5 +1,6 @@
 # Building a media browser service（构建媒体浏览器服务）
 
+> [GitHub 链接](https://github.com/Yjnull/android-interview-planing/blob/master/questions/Audio%26Video/Media_App_Architecture/Building_an_audio_app/Building_a_media_browser_service.md)
 > 译：https://developer.android.com/guide/topics/media-apps/audio-app/building-a-mediabrowserservice
 
 你的应用必须在其 manifest 中声明 `MediaBrowserService` 并使用 intent-filter。你可以选择自己的 service name。在下面的实例中，它是 “MediaPlaybackService” 。

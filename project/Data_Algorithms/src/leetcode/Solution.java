@@ -1,5 +1,9 @@
 package leetcode;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Solution {
@@ -236,12 +240,44 @@ public class Solution {
 
         return root;
     }
-    
+
+
+    private static void sortAsecString() {
+        //view=1&module_type=2&module_id=26&module_position=1&is_more=1
+        List<String> a = new ArrayList<>();
+        a.add("view=1");
+        a.add("module_type=2");
+        a.add("module_id=26");
+        a.add("module_position=1");
+        a.add("is_more=1");
+        Collections.sort(a, String.CASE_INSENSITIVE_ORDER);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, size = a.size(); i < size; i++) {
+            sb.append(a.get(i));
+            if (i != size - 1) {
+                sb.append("&");
+            }
+        }
+
+        System.out.println(sb.toString());
+    }
+
     public static void main(String[] args) {
         //System.out.println(trap(new int[]{2, 0, 2}));
         //System.out.println(toGoatLatin("I speak Goat Latin"));
         //System.out.println(largeGroupPositions("abcdddeeeeaabbbcd"));
         //System.out.println(maskPII("(3906)2 07143 711"));
-        System.out.println(constructFromPrePost(new int[]{2,1}, new int[]{1,2}));
+        //System.out.println(constructFromPrePost(new int[]{2,1}, new int[]{1,2}));
+        //sortAsecString();
+        /*System.out.println(Integer.toHexString('我'));
+        try {
+            System.out.println(URLEncoder.encode("我", "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }*/
+
+        String[] a = {"a","b","ba","bca","bda","bdca"};
+
     }
 }
