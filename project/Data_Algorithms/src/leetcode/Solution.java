@@ -277,7 +277,20 @@ public class Solution {
             e.printStackTrace();
         }*/
 
-        String[] a = {"a","b","ba","bca","bda","bdca"};
+        //String[] a = {"a","b","ba","bca","bda","bdca"};
+        int haha = Integer.MAX_VALUE;
+        System.out.println("haha = " + haha + ", " + Runtime.getRuntime().freeMemory());
+        HashMap<Integer, Integer> hashMap = new HashMap<>(haha);
+        for (int i = 0; i < haha; i++) {
+            hashMap.put(i, i + 1);
+            System.out.println("value = " + (i));
+        }
+        System.out.println("size = " + hashMap.size());
+
+        Set<Map.Entry<Integer, Integer>> entries = hashMap.entrySet();
+
+        Iterator<Map.Entry<Integer, Integer>> iterator = entries.iterator();
+        iterator.next();
 
     }
 }
