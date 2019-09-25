@@ -1,5 +1,7 @@
-# android-interview-planing
-for android interview
+# Yjnull-Field 空域
+
+## :interrobang:为什么要建这个仓库
+在学习的过程中，经常会遗忘又或感觉自己学会了，然真正要阐述的时候却无从下手，因此将自己学习过程中的一些心得记录下来，希望能对各位开发者有所帮助。我会不断更新这个仓库中的文章，如果想要关注可以点 star。
 
 要求
 ====
