@@ -85,9 +85,15 @@ dx工具是一种用来转换Java class成为DEX格式的工具。多个类被�
 
 
 
+--- 随笔 ---
+- 功耗控制：
+early_suspend 与 late_resume 机制。
+wake_lock 机制，设计思想与 C++ 的智能指针类似
+PowerManagerService 属于 SystemServer 进程，系统级的服务。
 
-
-
+- 功能接口：
+图形处理框架： Surface、SurfaceFlinger、SystemServer
+2160 x 1080 
 
 
 
