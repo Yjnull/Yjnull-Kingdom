@@ -70,7 +70,7 @@ static final int MIN_TREEIFY_CAPACITY = 64;
         Node<K,V> next;
 ```
 
-![HashMap 结构](img/HashMap 结构.png)
+![HashMap 结构](img/HashMap结构.png)
 
 ### 5. 相关实现
 
@@ -195,7 +195,7 @@ resize 大致步骤：
 
 接下来我们模拟一下扩容情况，移动 Node 的过程，即下面列出的代码中最后一段循环代码，这是扩容的主要逻辑。这里有几个约定，首先我们假设 value 值等于 hash 值从 0，1，2，3 ... 以此类推，然后初始 capacity 是默认值 16，加载因子也一样默认值 0.75，因此有如下的过程，一图胜千言：
 
-![HashMap resize方法](img/HashMap resize方法.png)
+![HashMap resize方法](img/HashMap-resize方法.png)
 
 其中 `e.hash & oldCap` 这个设计非常巧妙，既省去了重新计算 hash 值的时间（**在 jdk1.7 版本中是需要计算 hash 值然后确定下标的位置**），而且把之前冲突的节点分散到新的 table 中去了。要知道在我们 put 时，计算下标的代码是这样的 `(n - 1) & hash`。
 
@@ -296,7 +296,7 @@ resize 大致步骤：
 可以看到，这里对 key 的 hashCode 值做了一个处理，即：高 16bit 不变，低 16bit 和高 16bit 做了一个异或。
 计算下标的过程大抵如下所示：
 
-![HashMap hash方法](img/HashMap hash方法.png)
+![HashMap hash方法](img/HashMap-hash方法.png)
 
 那么为什么要将低 16bit 和高 16bit 做一个异或呢，源码注释中是这样写的：
 > Computes key.hashCode() and spreads (XORs) higher bits of hash to lower.  Because the table uses power-of-two masking, sets of hashes that vary only in bits above the current mask will always collide. (Among known examples are sets of Float keys holding consecutive whole numbers in small tables.)  So we apply a transform that spreads the impact of higher bits downward. There is a tradeoff between speed, utility, and quality of bit-spreading. Because many common sets of hashes are already reasonably distributed (so don't benefit from spreading), and because we use trees to handle large sets of collisions in bins, we just XOR some shifted bits in the cheapest possible way to reduce systematic lossage, as well as to incorporate impact of the highest bits that would otherwise never be used in index calculations because of table bounds.
