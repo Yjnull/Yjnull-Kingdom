@@ -87,6 +87,12 @@ sequenceDiagram
 
 
 
----
-git rebase test
+
+------
+git rebase 测试:
+当前在 feat1，提交 1。
+当前在 feat1，提交 2。
 cur branch is master , commit 1
+当前在 master，调用 `git merge feat1` ，那么经过合并后，提交 log 会分叉。
+
+
