@@ -95,4 +95,9 @@ git rebase 测试:
 cur branch is master , commit 1
 当前在 master，调用 `git merge feat1` ，那么经过合并后，提交 log 会分叉。
 
+下面的修改以 rebase 提交
+当前在 feat2，提交 1，我在 amend 提交 1。删除了 提交 1，用 amend 修改提交 1
+当前在 feat2，提交 2
+当前在 de82bfe，正在edit  [feat2 提交 2]，想增加提交 3
+
 cur branch is master , commit 2，模拟 rebase 了。
