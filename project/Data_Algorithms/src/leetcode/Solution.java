@@ -1,6 +1,8 @@
 package leetcode;
 
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -278,7 +280,7 @@ public class Solution {
         }*/
 
         //String[] a = {"a","b","ba","bca","bda","bdca"};
-        int haha = Integer.MAX_VALUE;
+        /*int haha = Integer.MAX_VALUE;
         System.out.println("haha = " + haha + ", " + Runtime.getRuntime().freeMemory());
         HashMap<Integer, Integer> hashMap = new HashMap<>(haha);
         for (int i = 0; i < haha; i++) {
@@ -290,7 +292,77 @@ public class Solution {
         Set<Map.Entry<Integer, Integer>> entries = hashMap.entrySet();
 
         Iterator<Map.Entry<Integer, Integer>> iterator = entries.iterator();
-        iterator.next();
+        iterator.next();*/
 
+        Solution solution = new Solution();
+        solution.startServer();
+    }
+
+    private boolean isClosed = false;
+    private void startServer() {
+        ServerSocket serverSocket = null;
+        Socket socket = null;
+        BufferedReader reader = null;
+        try {
+            serverSocket = new ServerSocket(9898);
+            System.out.println("server started");
+            socket = serverSocket.accept();
+            System.out.println("server accept = " + socket.hashCode());
+            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            loopWriter(socket);
+
+            String receivedMsg;
+            while ((receivedMsg = reader.readLine()) != null) {
+                System.out.println("server: " + receivedMsg);
+            }
+            System.out.println("server finish");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            isClosed = true;
+            System.out.println("server finally");
+            try {
+                if (reader != null) reader.close();
+                if (socket != null) socket.close();
+                if (serverSocket != null) serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void loopWriter(final Socket socket) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader reader = null;
+                BufferedWriter serverWriter = null;
+                try {
+                    serverWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                    reader = new BufferedReader(new InputStreamReader(System.in));
+
+                    System.out.println("server writer is ready...");
+
+                    String inputContent;
+                    while (!"bye".equals(inputContent = reader.readLine()) && !isClosed) {
+                        serverWriter.write(inputContent);
+                        serverWriter.newLine();
+                        serverWriter.flush();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    System.out.println("server writer finally");
+                    try {
+                        if (serverWriter != null) serverWriter.close();
+                        if (reader != null) reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 }
