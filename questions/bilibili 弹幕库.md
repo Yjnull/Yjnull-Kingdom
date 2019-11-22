@@ -95,4 +95,4 @@ git rebase 测试:
 cur branch is master , commit 1
 当前在 master，调用 `git merge feat1` ，那么经过合并后，提交 log 会分叉。
 
-
+cur branch is master , commit 2，模拟 rebase 了。
