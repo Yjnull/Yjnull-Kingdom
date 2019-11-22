@@ -87,4 +87,6 @@ sequenceDiagram
 
 
 
-
+---
+git rebase test
+cur branch is master , commit 1
