@@ -68,7 +68,6 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 - 负责日常维护，新功能点的开发。 
 - 推广新技术点，研究难点技术。如 leader 想基于 Robolectric 实现模拟网络请求的功能，故自定义 shadow 类，通过二次代理截取 ApiService 的获取过程，实现自己的 ApiService，并且在动态代理的 invoke 中加入自己真正的网络响应实现，达到模拟的目的。
 
-
 #### 2019/08 - 2019/11　　　MissEvan 游戏SDK　　　上海喵斯拉网络科技有限公司 
 
 ##### 项目简介：
