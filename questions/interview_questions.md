@@ -164,7 +164,6 @@ void checkThread() {
 
 
 
-
 * * *
 
 # A - Q
@@ -219,4 +218,17 @@ void checkThread() {
 1. jvm 内存区域、GC算法
 2. 一套试卷，四个算法题，一个网络，一个sql
 2.1 HTTP 请求格式， 状态行、请求头、消息主体
+
+# BX - Q
+1. mvvm 与 mvp 的区别
+2. mvvm 中 如何实现 View 与数据的绑定（通过 LiveData.observe)
+3. mvvm 中 LiveData.observe 在不同的生命周期中去绑定有什么区别
+4. 你遇到的最大的一个 Crash 问题
+5. Binder 机制
+6. retrofit 拦截器鉴权校验
+7. RecyclerView 显示优化（显示 6~8 个 ImageView，这其中涉及到内存的使用及优化）
+8. Glide 源码
+9. 自定义 View （圆形图片怎么做）
+10. idleHandler 一般用来做什么：Activity 启动优化
+11. 手势操作，滑动冲突
 
