@@ -232,3 +232,13 @@ void checkThread() {
 10. idleHandler 一般用来做什么：Activity 启动优化
 11. 手势操作，滑动冲突
 
+#JGY - Q
+1. 素数判定
+2. 两个无序数组找交集、两个有序数组找交集
+3. String、StringBuilder、StringBuffer
+4. View 绘制流程
+5. Handler
+6. 图片的组成方式、占用内存大小怎么计算 ARGB_8888，加载 10MB 图片怎么优化
+7. JVM 内存区域，GC 回收算法，四种引用
+8. https 原理
+9. 遇到的最大的一个问题
