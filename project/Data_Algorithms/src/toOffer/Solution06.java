@@ -1,68 +1,52 @@
 package toOffer;
 
+import java.util.ArrayList;
+import java.util.Stack;
+
 /**
- *  06: 重建二叉树
- *
- *  输入某二叉树的前序遍历和中序遍历，重建该二叉树
+ *  05: 从尾到头打印链表
+ *  解决方法：1. 栈
+ *          2. 递归，递归可能导致函数调用栈溢出
  */
 public class Solution06 {
-    class TreeNode {
+    class ListNode {
         int val;
-        TreeNode left;
-        TreeNode right;
-        TreeNode(int val) {
+        ListNode next = null;
+        ListNode(int val) {
             this.val = val;
         }
     }
 
-    public TreeNode reConstructBinaryTree(int [] pre,int [] in){
-        if(pre == null || in == null) return null;
-        return constructCore(pre, in, 0, pre.length - 1, 0, in.length - 1);
-    }
-
-    private TreeNode constructCore(int[] pre, int[] in,
-                                   int startPre, int endPre,
-                                   int startIn, int endIn){
-        //前序遍历的第一个数字是根节点的值
-        int rootVal = pre[startPre];
-        TreeNode root = new TreeNode(rootVal);
-        root.left = root.right = null;
-
-        if(startPre == endPre) {
-            if(startIn == endIn && pre[startPre] == in[startIn])
-                return root;
-            //else throw new Exception("");
+    public static ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
+        Stack<Integer> stack = new Stack<>();
+        ArrayList<Integer> ans = new ArrayList<>();
+        ListNode pNode = listNode;
+        while(pNode != null) {
+            stack.push(pNode.val);
+            pNode = pNode.next;
         }
 
-        //在中序遍历中找根节点的位置
-        int rootInorder = startIn;
-        while(rootInorder <= endIn && in[rootInorder] != rootVal)
-            ++ rootInorder;
-        ;
-        int leftLength = rootInorder - startIn;
-        int leftPreorderEnd = startPre + leftLength;
-        if(leftLength > 0)                 //左子树的长度要大于0，要不然不需要构建
-            root.left = constructCore(pre, in, startPre + 1, leftPreorderEnd, startIn, rootInorder - 1);
-        if(leftLength < endPre - startPre) //startPre + 左子树的长度要 < endPre 要不然都没有右子树就不需要构建了
-            root.right = constructCore(pre, in, leftPreorderEnd + 1, endPre, rootInorder + 1, endIn);
-
-        return root;
-    }
-
-    public static void postOrder(TreeNode localRoot) {
-        if (localRoot != null) {
-            postOrder(localRoot.left);
-            postOrder(localRoot.right);
-            System.out.print(localRoot.val + " ");
+        while(!stack.isEmpty()) {
+            ans.add(stack.pop());
         }
+        return ans;
     }
+
+
+    /*private ArrayList<Integer> ans = new ArrayList<>();
+    public ArrayList<Integer> printListFromTailToHead2(ListNode listNode) {
+        // 递归
+        if (listNode != null) {
+            if (listNode.next != null) {
+                printListFromTailToHead2(listNode.next);
+            }
+            ans.add(listNode.val);
+        }
+
+        return ans;
+    }*/
 
     public static void main(String[] args) {
-        TreeNode node = new Solution06().reConstructBinaryTree(
-                new int[]{1,2,4,7,3,5,6,8},
-                new int[]{4,7,2,1,5,3,8,6}
-        );
-        postOrder(node);
     }
 }
 

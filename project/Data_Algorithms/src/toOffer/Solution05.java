@@ -1,54 +1,55 @@
 package toOffer;
 
-import java.util.ArrayList;
-import java.util.Stack;
-
 /**
- *  05: 从尾到头打印链表
- *  解决方法：1. 栈
- *          2. 递归，递归可能导致函数调用栈溢出
+ * 04: 替换空格
+ * 把字符串中的每个空格替换成 "%20"
  */
 public class Solution05 {
-    class ListNode {
-        int val;
-        ListNode next = null;
-        ListNode(int val) {
-            this.val = val;
-        }
+    public static String replaceSpace(StringBuffer str) {
+        return str.toString().replace(" ", "%20");
     }
-
-    public static ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
-        Stack<Integer> stack = new Stack<>();
-        ArrayList<Integer> ans = new ArrayList<>();
-        ListNode pNode = listNode;
-        while(pNode != null) {
-            stack.push(pNode.val);
-            pNode = pNode.next;
-        }
-
-        while(!stack.isEmpty()) {
-            ans.add(stack.pop());
-        }
-        return ans;
-    }
-
-
-    /*private ArrayList<Integer> ans = new ArrayList<>();
-    public ArrayList<Integer> printListFromTailToHead2(ListNode listNode) {
-        // 递归
-        if (listNode != null) {
-            if (listNode.next != null) {
-                printListFromTailToHead2(listNode.next);
-            }
-            ans.add(listNode.val);
-        }
-
-        return ans;
-    }*/
 
     public static void main(String[] args) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("hello world");
+        System.out.println(replaceSpace(sb));
     }
 }
 
 
 
+/*
+C++ 解法: 从后往前复制
+
+class Solution {
+    public:
+    void replaceSpace(char *string,int length) {
+        if(string == NULL && length <= 0) return;
+
+        int originalLength = 0, numberOfBlank = 0, i = 0;
+        while(string[i] != '\0') {
+            originalLength++;
+            if(string[i] == ' ')
+                numberOfBlank++;
+            i++;
+        }
+
+        int newLength = originalLength + numberOfBlank * 2;
+        if(newLength > length) return;
+
+        int indexOfOriginal = originalLength;
+        int indexOfNew = newLength;
+        while(indexOfOriginal >= 0 && indexOfNew > indexOfOriginal) {
+            if(string[indexOfOriginal] == ' ') {
+                string[indexOfNew--] = '0';
+                string[indexOfNew--] = '2';
+                string[indexOfNew--] = '%';
+            } else {
+                string[indexOfNew--] = string[indexOfOriginal];
+            }
+
+            indexOfOriginal--;
+        }
+
+    }
+};*/

@@ -1,55 +1,27 @@
 package toOffer;
 
 /**
- * 04: 替换空格
- * 把字符串中的每个空格替换成 "%20"
+ * 03: 二维数组中的查找
+ * 在一个二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。
+ * 请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
  */
 public class Solution04 {
-    public static String replaceSpace(StringBuffer str) {
-        return str.toString().replace(" ", "%20");
+    public boolean Find(int target, int [][] array) {
+        if (array == null) return false;
+        int row = 0, column = array[0].length - 1;
+        while (row < array.length && column >= 0) {
+            if (array[row][column] > target)
+                column--;
+            else if (array[row][column] < target)
+                row++;
+            else
+                return true;
+        }
+
+        return false;
     }
 
     public static void main(String[] args) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("hello world");
-        System.out.println(replaceSpace(sb));
+        System.out.println(new Solution04().Find(7, new int[][]{ {1,2,8,9}, {2,4,9,12}, {4,7,10,13}, {6,8,11,15} }));
     }
 }
-
-
-
-/*
-C++ 解法: 从后往前复制
-
-class Solution {
-    public:
-    void replaceSpace(char *string,int length) {
-        if(string == NULL && length <= 0) return;
-
-        int originalLength = 0, numberOfBlank = 0, i = 0;
-        while(string[i] != '\0') {
-            originalLength++;
-            if(string[i] == ' ')
-                numberOfBlank++;
-            i++;
-        }
-
-        int newLength = originalLength + numberOfBlank * 2;
-        if(newLength > length) return;
-
-        int indexOfOriginal = originalLength;
-        int indexOfNew = newLength;
-        while(indexOfOriginal >= 0 && indexOfNew > indexOfOriginal) {
-            if(string[indexOfOriginal] == ' ') {
-                string[indexOfNew--] = '0';
-                string[indexOfNew--] = '2';
-                string[indexOfNew--] = '%';
-            } else {
-                string[indexOfNew--] = string[indexOfOriginal];
-            }
-
-            indexOfOriginal--;
-        }
-
-    }
-};*/
