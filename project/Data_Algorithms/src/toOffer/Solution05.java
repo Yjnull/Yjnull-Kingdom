@@ -9,6 +9,31 @@ public class Solution05 {
         return str.toString().replace(" ", "%20");
     }
 
+    public static String replaceSpace(String s) {
+        if(s == null || s.length() <= 0) return s;
+
+        int len = s.length(), count = 0;
+        for(int i = 0; i < len; i++) {
+            if(s.charAt(i) == ' ') count++;
+        }
+        len = len + 2 * count;
+
+        char[] result = new char[len];
+        for(int i = 0, j = 0; i < len; ) {
+            char a = s.charAt(j++);
+            if(a == ' ') {
+                result[i++] = '%';
+                result[i++] = '2';
+                result[i++] = '0';
+            } else {
+                result[i++] = a;
+            }
+        }
+
+        return new String(result);
+
+    }
+
     public static void main(String[] args) {
         StringBuffer sb = new StringBuffer();
         sb.append("hello world");
