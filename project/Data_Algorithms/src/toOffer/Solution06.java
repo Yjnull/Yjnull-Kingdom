@@ -32,6 +32,29 @@ public class Solution06 {
         return ans;
     }
 
+    /**
+     * 第一次遍历拿到大小，第二次直接赋值
+     * O(n)
+     */
+    public int[] reversePrint(ListNode head) {
+        ListNode cur = head;
+        int count = 0;
+        while(cur != null) {
+            count++;
+            cur = cur.next;
+        }
+
+        cur = head;
+
+        int[] result = new int[count];
+        while(cur != null) {
+            result[--count] = cur.val;
+            cur = cur.next;
+        }
+
+        return result;
+    }
+
 
     /*private ArrayList<Integer> ans = new ArrayList<>();
     public ArrayList<Integer> printListFromTailToHead2(ListNode listNode) {
