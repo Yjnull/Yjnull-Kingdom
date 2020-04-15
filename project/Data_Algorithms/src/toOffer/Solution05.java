@@ -1,7 +1,7 @@
 package toOffer;
 
 /**
- * 04: 替换空格
+ * 05: 替换空格
  * 把字符串中的每个空格替换成 "%20"
  */
 public class Solution05 {

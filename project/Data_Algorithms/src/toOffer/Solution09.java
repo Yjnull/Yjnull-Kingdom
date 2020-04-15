@@ -3,7 +3,7 @@ package toOffer;
 import java.util.Stack;
 
 /**
- * 07: 用两个栈实现队列
+ * 09: 用两个栈实现队列
  */
 public class Solution09 {
     Stack<Integer> stack1 = new Stack<Integer>();

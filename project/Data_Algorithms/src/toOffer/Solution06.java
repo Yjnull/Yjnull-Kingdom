@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- *  05: 从尾到头打印链表
+ *  06: 从尾到头打印链表
  *  解决方法：1. 栈
  *          2. 递归，递归可能导致函数调用栈溢出
  */

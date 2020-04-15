@@ -1,7 +1,7 @@
 package toOffer;
 
 /**
- * 08: 旋转数组的最小数字
+ * 11: 旋转数组的最小数字
  */
 public class Solution11 {
 
