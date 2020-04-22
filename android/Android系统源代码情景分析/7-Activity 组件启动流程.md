@@ -13,7 +13,7 @@
 - AMS
 - ActivityStack：用来描述一个 Activity 组件堆栈。
 - ActivityInfo：
-- ResolveInfo：
+- ResolveInfo：PMS.resolveIntent()，解析 intent 得到的一个信息
 - ProcessRecord：在 AMS 中，每一个应用程序进程都用 ProcessRecord 来描述，并且保存在 AMS 内部、
 - New Process
 - TaskRecord
@@ -123,7 +123,7 @@ public final int startActivity(IApplicationThread caller,
 
 这里可以看到将启动操作委托给 mMainStack 了，mMainStack 是什么呢？它是一个类型为 ActivityStack 的成员变量，用来描述一个 Activity 组件堆栈。OK，那我们进到 ActivityStack 中的 startActivityMayWait 方法看看，这个方法挺长，所以分析就在注释里了：
 
-**Step 8frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+**Step 1 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /**
@@ -193,7 +193,7 @@ final int startActivityMayWait(IApplicationThread caller,
 
 其实总结下来无非就是通过 PMS 将 Intent 中的参数解析出来，并获取到即将启动的 Activity 组件的更多信息，也就是 `com.yjnull.demo.activity.MainActivity` 的更多信息。
 
-**frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+**Step 2 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /**
@@ -257,9 +257,7 @@ final int startActivityLocked(IApplicationThread caller,
 
 这一段首先是通过 resultTo 参数，在 Activity 堆栈中拿到 Launcher 这个 Activity 的相关信息并保存在 sourceRecod 中，然后创建一个新的 ActivityRecord 用来描述即将要启动的 Activity 的相关信息，并保存在变量 r 中。 接着调用 startActivityUncheckedLocked 函数进行下一步操作。
 
-
-
-**frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+**Step 3 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /**
@@ -386,7 +384,7 @@ final int startActivityUncheckedLocked(ActivityRecord r,
 
 
 
-**frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+**Step 4 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /**
@@ -441,7 +439,7 @@ private final void startActivityLocked(ActivityRecord r, boolean newTask,
 
 
 
-**frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+**Step 5 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /*
@@ -507,7 +505,9 @@ final boolean resumeTopActivityLocked(ActivityRecord prev) {
 
 ------
 
-**frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+#### 2.3 回到 Launcher 让它 Pause
+
+**Step 6 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
 
 ```java
 /*
@@ -525,6 +525,7 @@ private final void startPausingLocked(boolean userLeaving, boolean uiSleeping) {
         }
         ......
         mResumedActivity = null;
+        // 这个赋值在下面 2.4 小节有用
         mPausingActivity = prev;
         mLastPausedActivity = prev;
         prev.state = ActivityState.PAUSING;
@@ -553,7 +554,7 @@ private final void startPausingLocked(boolean userLeaving, boolean uiSleeping) {
 
 
 
-**frameworks/base/core/java/android/app/ApplicationThreadNative.java**
+**Step 7 frameworks/base/core/java/android/app/ApplicationThreadNative.java**
 
 ```java
 public final void schedulePauseActivity(IBinder token, boolean finished,
@@ -572,7 +573,7 @@ public final void schedulePauseActivity(IBinder token, boolean finished,
 
 没啥说的，通过 Binder 进入到 ApplicationThread.schedulePauseActivity 方法。
 
-**frameworks/base/core/java/android/app/ActivityThread.java**
+**Step 8 frameworks/base/core/java/android/app/ActivityThread.java**
 
 ```java
 /*
@@ -594,7 +595,7 @@ public final void schedulePauseActivity(IBinder token, boolean finished,
 
 这里无非就是通过 Handler 将消息发送出去了，最后是由 H.handleMessage 来处理这个消息。H 收到 Paused 消息后，会交给 handlePauseActivity 来处理。
 
-**frameworks/base/core/java/android/app/ActivityThread.java**
+**Step 9 frameworks/base/core/java/android/app/ActivityThread.java**
 
 ```java
 private final void handlePauseActivity(IBinder token, boolean finished,
@@ -625,6 +626,438 @@ private final void handlePauseActivity(IBinder token, boolean finished,
 这里又可以告一段落了，Launcher 已经进入 onPause 了，并且去通知 AMS，AMS 接到这个通知就可以继续完成未完成的事情了，即启动 MainActivity。
 
 ------
+
+#### 2.4 Launcher 通知 AMS 我暂停好了，你继续做你接下来要做的事吧
+
+**Step 10 frameworks/base/services/java/com/android/server/am/ActivityManagerService.java**
+
+```java
+/*
+* token: 是 Launcher 的 ActivityRecord
+*/
+public final void activityPaused(IBinder token, Bundle icicle) {
+        // Refuse possible leaked file descriptors
+        if (icicle != null && icicle.hasFileDescriptors()) {
+            throw new IllegalArgumentException("File descriptors passed in Bundle");
+        }
+
+        final long origId = Binder.clearCallingIdentity();
+        mMainStack.activityPaused(token, icicle, false);
+        Binder.restoreCallingIdentity(origId);
+    }
+```
+
+这里可以看到再次进入到 ActivityStack 类中，去执行 activityPaused 函数。
+
+**Step 11 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+
+```java
+/*
+* token: 是 Launcher 的 ActivityRecord
+* icicle: 不关心
+* timeout: false
+*/
+final void activityPaused(IBinder token, Bundle icicle, boolean timeout) {
+        ......
+        ActivityRecord r = null;
+
+        synchronized (mService) {
+            // 这里拿到的是 Launcher 在 mHistory 列表中的 index
+            int index = indexOfTokenLocked(token);
+            if (index >= 0) {
+                // 拿到 Launcher 的 ActivityRecord
+                r = (ActivityRecord)mHistory.get(index);
+                if (!timeout) {
+                    r.icicle = icicle;
+                    r.haveState = true;
+                }
+                mHandler.removeMessages(PAUSE_TIMEOUT_MSG, r);
+                // 在前面的 2.3 小节中，我们让 Launcher 进入 Paused 状态时，把 Launcher 赋值给了 mPausingActivity，因此下面这个判断是相等的
+                if (mPausingActivity == r) {
+                    r.state = ActivityState.PAUSED;
+                    completePauseLocked();
+                } else {
+                    ......
+                }
+            }
+        }
+    }
+```
+
+这一段主要是判断 mPausingActivity 是否等于 token 代表的 Activity，如果是相等就代表完成了 Pause，进入  completePauseLocked 方法。
+
+**Step 12 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+
+```java
+private final void completePauseLocked() {
+        // 代表 Launcher
+        ActivityRecord prev = mPausingActivity;
+        ......
+        
+        if (prev != null) {
+            ......
+            // 这边把 mPausingActivity 置空，因为已经不需要了
+            mPausingActivity = null;
+        }
+
+        if (!mService.mSleeping && !mService.mShuttingDown) {
+            resumeTopActivityLocked(prev);
+        } else {
+            ......
+        }
+        
+        ......
+    }
+```
+
+这里 AMS 肯定还没有在睡眠也没有 shutdown，因此进入 resumeTopActivityLocked(prev)
+
+**Step 13 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+
+```java
+/*
+* prev: Launcher Activity
+*/
+final boolean resumeTopActivityLocked(ActivityRecord prev) {
+        // 这边获取到的 next 就是要启动的 MainActivity 了
+        ActivityRecord next = topRunningActivityLocked(null);
+
+        // 这里的 mUserLeaving 在上面的分析中得出是 true
+        final boolean userLeaving = mUserLeaving;
+        mUserLeaving = false;
+  
+        ......
+          
+        next.delayedResume = false;
+        
+        // mResumedActivity 这里是 null，因为之前最后一个 Resumed 状态的 Activity 是 Launcher，现在它已经处于 Paused 状态了。
+        if (mResumedActivity == next && next.state == ActivityState.RESUMED) {
+            ......
+            return false;
+        }
+
+        // 这里是处理休眠状态时的情况，这里 mLastPausedActivity 是 Launcher
+        if ((mService.mSleeping || mService.mShuttingDown)
+                && mLastPausedActivity == next && next.state == ActivityState.PAUSED) {
+            ......
+            return false;
+        }
+        ......
+          
+        // 在 Step 5 的时候，这里是满足情况的，会去执行 startPausingLocked，但是现在不满足了，mResumedActivity 已经为 null 了
+        if (mResumedActivity != null) {
+            ......
+            startPausingLocked(userLeaving, false);
+            return true;
+        }
+        ......
+          
+        // next 是将要启动的 MainActivity，前面我们只是为它创建了 ActivityRecord，然后就让 Launcher 去 Pause 了，因此这里的 app 域还是为 null 的。也很容易理解，我们还没启动起来呢，怎么可能不为 null
+        if (next.app != null && next.app.thread != null) {
+            ......
+        } else {
+            ......
+            // 调用这个去启动 Activity
+            startSpecificActivityLocked(next, true, true);
+        }
+  
+        return true;
+    }
+```
+
+这里在 Step 5 的时候分析过，那个时候 prev 是为 null 的，现在有值了，是 Launcher Activity，所以会走不同的逻辑了。
+
+**Step 14 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+
+```java
+/*
+* r: 要启动的 MainActivity 的 ActivityRecord
+* andResume: true
+* checkConfig: true
+*/
+private final void startSpecificActivityLocked(ActivityRecord r,
+            boolean andResume, boolean checkConfig) {
+        // 这里我们的是第一次启动应用程序的 Activity，所以取到的 app 为 null
+        ProcessRecord app = mService.getProcessRecordLocked(r.processName,
+                r.info.applicationInfo.uid);
+        
+        ......
+        
+        if (app != null && app.thread != null) {
+            try {
+                realStartActivityLocked(r, app, andResume, checkConfig);
+                return;
+            } catch (RemoteException e) {
+                .......
+            }
+        }
+
+        mService.startProcessLocked(r.processName, r.info.applicationInfo, true, 0,
+                "activity", r.intent.getComponent(), false);
+    }
+```
+
+**Step 15 frameworks/base/services/java/com/android/server/am/ActivityManagerService.java**
+
+```java
+/*
+* processName: com.yjnull.demo
+* info: null
+* knownToBeDead: true
+* intentFlags: 0
+* hostingType: "activity"
+* hostingName: ComponentName 对象
+* allowWhileBooting: false
+*/
+final ProcessRecord startProcessLocked(String processName,
+            ApplicationInfo info, boolean knownToBeDead, int intentFlags,
+            String hostingType, ComponentName hostingName, boolean allowWhileBooting) {
+        // 这里再次检查 process+uid 命名的进程是否存在，取到的 app 还是等于 null
+        ProcessRecord app = getProcessRecordLocked(processName, info.uid);
+        ......
+          
+        // 这里的 hostingNameStr = com.yjnull.demo/.activity.MainActivity
+        String hostingNameStr = hostingName != null
+                ? hostingName.flattenToShortString() : null;
+        
+        ......
+        
+        if (app == null) {
+            // 创建一个 processRecord
+            app = newProcessRecordLocked(null, info, processName);
+            // mProcessNames 是一个 ProcessMap<ProcessRecord> 类型的变量
+            mProcessNames.put(processName, info.uid, app);
+        } else {
+            // If this is a new package in the process, add the package to the list
+            app.addPackage(info.packageName);
+        }
+
+        ......
+        // 这里应该是去真正创建一个新的进程了
+        startProcessLocked(app, hostingType, hostingNameStr);
+        return (app.pid != 0) ? app : null;
+}
+
+// --- 接着看 startProcessLocked 方法 ---------------------------------------------
+
+/*
+* app: 上面新创建的 ProcessRecord
+* hostingType: "activity"
+* hostingNameStr: "com.yjnull.demo/.activity.MainActivity"
+*/
+private final void startProcessLocked(ProcessRecord app,
+            String hostingType, String hostingNameStr) {
+        ......
+        
+        try {
+            int uid = app.info.uid;
+            int[] gids = null;
+            try {
+                gids = mContext.getPackageManager().getPackageGids(
+                        app.info.packageName);
+            } catch (PackageManager.NameNotFoundException e) {
+                Slog.w(TAG, "Unable to retrieve gids", e);
+            }
+            ......
+            int debugFlags = 0;
+            ......
+            // 这里主要是通过 Process.start 来创建一个新的进程，新的进程会导入 android.app.ActivityThread 类，并执行它的 main 函数
+            int pid = Process.start("android.app.ActivityThread",
+                    mSimpleProcessManagement ? app.processName : null, uid, uid,
+                    gids, debugFlags, null);
+            ......
+            if (pid == 0 || pid == MY_PID) {
+                // Processes are being emulated with threads.
+                app.pid = MY_PID;
+                app.removed = false;
+                mStartingProcesses.add(app);
+            } else if (pid > 0) {
+                app.pid = pid;
+                app.removed = false;
+                synchronized (mPidsSelfLocked) {
+                    this.mPidsSelfLocked.put(pid, app);
+                    Message msg = mHandler.obtainMessage(PROC_START_TIMEOUT_MSG);
+                    msg.obj = app;
+                    mHandler.sendMessageDelayed(msg, PROC_START_TIMEOUT);
+                }
+            } else {
+                app.pid = 0;
+                ......
+            }
+        } catch (RuntimeException e) {
+            ......
+        }
+    }
+```
+
+
+
+#### 2.5 创建新进程去了
+
+创建新进程的主要过程：
+
+- 把一些参数拼接好，通过 socket 发出去。ZygoteInit 类在 runSelectLoopMode 函数会一直侦听是否有请求，当侦听到有请求来临时，会交给 ZygoteConnection 的 runOnce 函数去处理。这里面会通过 Zygote.forkAndSpecialize 真正创建进程。
+- Zygote.forkAndSpecialize 创建一个进程后，会有两个返回值，一个是在当前进程中返回的，一个是在新创建的进程中返回的。在当前进程中返回的是新创建进程的 pid，而在新创建进程中返回的是 0。 当 pid 不等于 0 时，会调用 handleParentProc ，这里面会通过 `mSocketOutStream.writeInt(pid);` 将 pid 发送回去。这样上面所讲的 AMS 去启动一个新进程的流程就结束了，AMS 拿到了 pid，并赋给了 ProcessRecord。然鹅，新进程开始继续运行了呢。
+
+- 创建好新进程后，肯定还需要一些处理，前面我们有拼接过一些参数，那些参数里有一个 `--runtime-init` ，因此新进程通过这个参数就知道要去初始化运行时库，于是继续执行 RuntimeInit.zygoteInit 进一步处理。这里面主要做了两件事，一个 zygoteInitNative()，一个 invokeStaticMain()。前者是执行 Binder 驱动程序初始化相关的工作。后者就是执行进程的入口函数，在这个场景下就是 `android.app.ActivityThread` 的 main 函数。
+
+- 这样新进程就进入到 ActivityThread 的 main 函数了，在 main 里面，我们会创建一个 ActivityThread 实例，然后调用它的 attach 函数，接着就通过 Looper 进入消息循环了，直到最后进程退出。
+
+在创建新进程这里我们好像断流程了。 AMS 在拿到 pid 后就结束了。
+
+为什么会觉得断流程了，因为 MainActivity 还是没启动起来。但是仔细想想，我们运行 MainActivity 的进程已经启动起来了，并且调用了 attach 函数，那么我们新的流程就从 attach 开始分析。
+
+
+
+#### 2.6 新进程调用 ActivityThread.attach()
+
+函数 attach 最终会调用 AMS 的 attachApplication 函数，传入的参数是 mAppThread。
+
+**Step 16 frameworks/base/services/java/com/android/server/am/ActivityManagerService.java**
+
+```java
+/*
+* thread: 新进程的 ApplicationThread
+* pid: 新进程的 Binder.getCallingPid()
+*/
+private final boolean attachApplicationLocked(IApplicationThread thread,
+            int pid) {
+        // Find the application record that is being attached...  either via
+        // the pid if we are running in multiple processes, or just pull the
+        // next app record if we are emulating process with anonymous threads.
+        ProcessRecord app;
+        if (pid != MY_PID && pid >= 0) {
+            synchronized (mPidsSelfLocked) {
+                // 前面在 Step15 创建一个新进程获得 pid 时，将 ProcessRecord put 进 mPidsSelfLocked 了。这里通过 pid 取出来
+                app = mPidsSelfLocked.get(pid);
+            }
+        } else if (mStartingProcesses.size() > 0) {
+            ......
+        } else {
+            ......
+        }
+
+        if (app == null) {
+            ......
+            return false;
+        }
+
+        ......
+
+        String processName = app.processName;
+        try {
+            thread.asBinder().linkToDeath(new AppDeathRecipient(
+                    app, pid, thread), 0);
+        } catch (RemoteException e) {
+            ......
+            return false;
+        }
+
+        ......
+        
+        app.thread = thread;
+        app.curAdj = app.setAdj = -100;
+        app.curSchedGroup = Process.THREAD_GROUP_DEFAULT;
+        app.setSchedGroup = Process.THREAD_GROUP_BG_NONINTERACTIVE;
+        app.forcingToForeground = null;
+        app.foregroundServices = false;
+        app.debugging = false;
+
+        mHandler.removeMessages(PROC_START_TIMEOUT_MSG, app);
+
+        boolean normalMode = mProcessesReady || isAllowedWhileBooting(app.info);
+        ......
+
+        boolean badApp = false;
+        boolean didSomething = false;
+
+        // See if the top visible activity is waiting to run in this process...
+        ActivityRecord hr = mMainStack.topRunningActivityLocked(null);
+        if (hr != null && normalMode) {
+            if (hr.app == null && app.info.uid == hr.info.applicationInfo.uid
+                    && processName.equals(hr.processName)) {
+                try {
+                    if (mMainStack.realStartActivityLocked(hr, app, true, true)) {
+                        didSomething = true;
+                    }
+                } catch (Exception e) {
+                    ......
+                    badApp = true;
+                }
+            } else {
+                ......
+            }
+        }
+
+        // Find any services that should be running in this process...
+        if (!badApp && mPendingServices.size() > 0) {
+            ServiceRecord sr = null;
+            try {
+                for (int i=0; i<mPendingServices.size(); i++) {
+                    sr = mPendingServices.get(i);
+                    if (app.info.uid != sr.appInfo.uid
+                            || !processName.equals(sr.processName)) {
+                        continue;
+                    }
+
+                    mPendingServices.remove(i);
+                    i--;
+                    realStartServiceLocked(sr, app);
+                    didSomething = true;
+                }
+            } catch (Exception e) {
+                Slog.w(TAG, "Exception in new application when starting service "
+                      + sr.shortName, e);
+                badApp = true;
+            }
+        }
+
+        // Check if the next broadcast receiver is in this process...
+        BroadcastRecord br = mPendingBroadcast;
+        if (!badApp && br != null && br.curApp == app) {
+            try {
+                mPendingBroadcast = null;
+                processCurBroadcastLocked(br, app);
+                didSomething = true;
+            } catch (Exception e) {
+                Slog.w(TAG, "Exception in new application when starting receiver "
+                      + br.curComponent.flattenToShortString(), e);
+                badApp = true;
+                logBroadcastReceiverDiscardLocked(br);
+                finishReceiverLocked(br.receiver, br.resultCode, br.resultData,
+                        br.resultExtras, br.resultAbort, true);
+                scheduleBroadcastsLocked();
+                // We need to reset the state if we fails to start the receiver.
+                br.state = BroadcastRecord.IDLE;
+            }
+        }
+
+        // Check whether the next backup agent is in this process...
+        if (!badApp && mBackupTarget != null && mBackupTarget.appInfo.uid == app.info.uid) {
+            if (DEBUG_BACKUP) Slog.v(TAG, "New app is backup target, launching agent for " + app);
+            ensurePackageDexOpt(mBackupTarget.appInfo.packageName);
+            try {
+                thread.scheduleCreateBackupAgent(mBackupTarget.appInfo, mBackupTarget.backupMode);
+            } catch (Exception e) {
+                Slog.w(TAG, "Exception scheduling backup agent creation: ");
+                e.printStackTrace();
+            }
+        }
+
+        if (badApp) {
+            // todo: Also need to kill application to deal with all
+            // kinds of exceptions.
+            handleAppDiedLocked(app, false);
+            return false;
+        }
+
+        if (!didSomething) {
+            updateOomAdjLocked();
+        }
+
+        return true;
+    }
+```
 
 
 
