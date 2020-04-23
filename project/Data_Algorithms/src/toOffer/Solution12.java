@@ -35,7 +35,8 @@ public class Solution12 {
             System.out.println("----------");
         }
         // *** 背包问题 ***
-
+        packageTrace(0,0);
+        System.out.println("背包最大可装= " + maxResult);
     }
 
     /**
@@ -157,8 +158,26 @@ public class Solution12 {
     /**
      * 背包问题
      */
-    private static void packageTrace() {
+    private static final int n = 5; // 物品个数
+    private static final int maxWeight = 9; // 背包最大承受重量
 
+    private static int maxResult = 0; // 结果: 背包中物品总重量的最大值
+    private static int[] goodsWeight = {2, 2, 4, 6, 3};
+
+    private static void packageTrace(int i /*当前处理第几个物品*/, int curWeight /*当前背包重量*/) {
+        // curWeight == maxWeight 表示装满了，i == n 表示物品都考察完了
+        if (curWeight == maxWeight || i == n) {
+            if (curWeight > maxResult) maxResult = curWeight;
+            return;
+        }
+
+        // 选择不装这个物品
+        packageTrace(i + 1, curWeight);
+
+        // 选择装这个物品
+        if (curWeight + goodsWeight[i] <= maxWeight) {
+            packageTrace(i + 1, curWeight + goodsWeight[i]);
+        }
     }
 
 
