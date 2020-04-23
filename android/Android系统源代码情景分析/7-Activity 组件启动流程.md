@@ -5,19 +5,16 @@
 ### 1. 参与角色
 
 - Activity
-- Task：是一系列 Activity 的集合，这个集合是以堆栈的形式来组织的。
-- Instrumentation
-- ActivityThread：ActivityThread 用来描述一个应用程序进程，系统每当启动一个应用程序进程时，都会在该进程里加载一个 ActivityThread 实例，并且执行 main 方法，从而开启主线程 loop 循环。并且每一个在该进程中启动的 Activity 组件，都会保存这个 ActivityThread 实例在成员变量 mMainThread 中。
-- ApplicationThread：看名字会很困惑以为也是一个线程，实则不然，它是一个 **Binder 本地对象**，可与 AMS 进行 IPC 通信。（继承 IApplicationThread.Stub）
 - Launcher
 - AMS
-- ActivityStack：用来描述一个 Activity 组件堆栈。
-- ActivityInfo：
+- Instrumentation：监控应用程序和系统之间的交互操作
+- ActivityThread：ActivityThread 用来描述一个应用程序进程，系统每当启动一个应用程序进程时，都会在该进程里加载一个 ActivityThread 实例，并且执行 main 方法，从而开启主线程 looper 循环。并且每一个在该进程中启动的 Activity 组件，都会保存这个 ActivityThread 实例在成员变量 mMainThread 中
+- ApplicationThread：看名字会很困惑以为也是一个线程，实则不然，它是一个 **Binder 本地对象**，可与 AMS 进行 IPC 通信。（继承 IApplicationThread.Stub）
+- ActivityStack：用来描述一个 Activity 组件堆栈
 - ResolveInfo：PMS.resolveIntent()，解析 intent 得到的一个信息
-- ProcessRecord：在 AMS 中，每一个应用程序进程都用 ProcessRecord 来描述，并且保存在 AMS 内部、
-- New Process
-- TaskRecord
-- ActivityRecord：AMS 中的一个 Binder 本地对象，每一个已经启动的 Activity 组件在 AMS 中都有一个对应的 ActivityRecord 对象，用来维护对应的 Activity 组件的运行状态和信息。通常 Activity 中的 **mToken** 成员变量会指向它，mToken 是一个 Binder 代理对象。
+- ProcessRecord：在 AMS 中，每一个应用程序进程都用 ProcessRecord 来描述，并且保存在 AMS 内部。
+- TaskRecord：任务栈的表现形式
+- ActivityRecord：AMS 中的一个 Binder 本地对象，每一个已经启动的 Activity 组件在 AMS 中都有一个对应的 ActivityRecord 对象，用来维护对应的 Activity 组件的运行状态和信息。通常 Activity 中的 **mToken** 成员变量会指向它，mToken 是一个 Binder 代理对象
 
 ### 2. 启动流程
 
@@ -909,7 +906,7 @@ private final void startProcessLocked(ProcessRecord app,
 
 
 
-#### 2.6 新进程调用 ActivityThread.attach()
+#### 2.6 新进程调用 ActivityThread.attach()，向 AMS 发送消息，在 AMS 中继续处理
 
 函数 attach 最终会调用 AMS 的 attachApplication 函数，传入的参数是 mAppThread。
 
@@ -954,7 +951,7 @@ private final boolean attachApplicationLocked(IApplicationThread thread,
         }
 
         ......
-        
+        // 主要进行一些初始化，把 thread 设置为 ApplicationThread 是关键，这样，AMS 就可以通过这个 thread 与新创建的应用程序进程通信了
         app.thread = thread;
         app.curAdj = app.setAdj = -100;
         app.curSchedGroup = Process.THREAD_GROUP_DEFAULT;
@@ -972,6 +969,7 @@ private final boolean attachApplicationLocked(IApplicationThread thread,
         boolean didSomething = false;
 
         // See if the top visible activity is waiting to run in this process...
+        // 这里取栈顶的 ActivityRecord，其实就是对应的 MainActivity
         ActivityRecord hr = mMainStack.topRunningActivityLocked(null);
         if (hr != null && normalMode) {
             if (hr.app == null && app.info.uid == hr.info.applicationInfo.uid
@@ -989,78 +987,198 @@ private final boolean attachApplicationLocked(IApplicationThread thread,
             }
         }
 
-        // Find any services that should be running in this process...
-        if (!badApp && mPendingServices.size() > 0) {
-            ServiceRecord sr = null;
-            try {
-                for (int i=0; i<mPendingServices.size(); i++) {
-                    sr = mPendingServices.get(i);
-                    if (app.info.uid != sr.appInfo.uid
-                            || !processName.equals(sr.processName)) {
-                        continue;
-                    }
-
-                    mPendingServices.remove(i);
-                    i--;
-                    realStartServiceLocked(sr, app);
-                    didSomething = true;
-                }
-            } catch (Exception e) {
-                Slog.w(TAG, "Exception in new application when starting service "
-                      + sr.shortName, e);
-                badApp = true;
-            }
-        }
-
-        // Check if the next broadcast receiver is in this process...
-        BroadcastRecord br = mPendingBroadcast;
-        if (!badApp && br != null && br.curApp == app) {
-            try {
-                mPendingBroadcast = null;
-                processCurBroadcastLocked(br, app);
-                didSomething = true;
-            } catch (Exception e) {
-                Slog.w(TAG, "Exception in new application when starting receiver "
-                      + br.curComponent.flattenToShortString(), e);
-                badApp = true;
-                logBroadcastReceiverDiscardLocked(br);
-                finishReceiverLocked(br.receiver, br.resultCode, br.resultData,
-                        br.resultExtras, br.resultAbort, true);
-                scheduleBroadcastsLocked();
-                // We need to reset the state if we fails to start the receiver.
-                br.state = BroadcastRecord.IDLE;
-            }
-        }
-
-        // Check whether the next backup agent is in this process...
-        if (!badApp && mBackupTarget != null && mBackupTarget.appInfo.uid == app.info.uid) {
-            if (DEBUG_BACKUP) Slog.v(TAG, "New app is backup target, launching agent for " + app);
-            ensurePackageDexOpt(mBackupTarget.appInfo.packageName);
-            try {
-                thread.scheduleCreateBackupAgent(mBackupTarget.appInfo, mBackupTarget.backupMode);
-            } catch (Exception e) {
-                Slog.w(TAG, "Exception scheduling backup agent creation: ");
-                e.printStackTrace();
-            }
-        }
-
-        if (badApp) {
-            // todo: Also need to kill application to deal with all
-            // kinds of exceptions.
-            handleAppDiedLocked(app, false);
-            return false;
-        }
-
-        if (!didSomething) {
-            updateOomAdjLocked();
-        }
+        ......
 
         return true;
     }
 ```
 
+这一段实际是通过 pid 找到之前创建的 ProcessRecord，然后初始化一些值，主要是把 ApplicationThread 设置进去。最后交给 realStartActivityLocked 进一步处理。
 
+**Step 17 frameworks/base/services/java/com/android/server/am/ActivityStack.java**
+
+```java
+/**
+* r: MainActivity 代表的 ActivityRecord
+* app: 新创建的进程，即 MainActivity 将要运行在的进程
+* andResume: true
+* checkConfig: true
+*/
+final boolean realStartActivityLocked(ActivityRecord r,
+            ProcessRecord app, boolean andResume, boolean checkConfig)
+            throws RemoteException {
+        ......
+
+        r.app = app;
+        ......
+
+        int idx = app.activities.indexOf(r);
+        if (idx < 0) {
+            app.activities.add(r);
+        }
+        ......
+
+        try {
+            ......
+            List<ResultInfo> results = null;
+            List<Intent> newIntents = null;
+            if (andResume) {
+                results = r.results;
+                newIntents = r.newIntents;
+            }
+            ......
+            app.thread.scheduleLaunchActivity(new Intent(r.intent), r,
+                    System.identityHashCode(r),
+                    r.info, r.icicle, results, newIntents, !andResume,
+                    mService.isNextTransitionForward());
+            
+            ......
+            
+        } catch (RemoteException e) {
+            ......
+        }
+
+        ......
+        
+        return true;
+    }
+```
+
+这里最后把启动 MainActivity 的任务交给了应用程序进程的 ApplicationThread 中去了。
+
+到这里我们想想，前面创建了一个新进程后，新进程已经进入了 looper 消息循环，一直在等待消息来处理，此时这个新进程还没有任何 Activity 启动起来。但是 AMS 已经有了 MainActivity 的记录 ActivityRecord，也有了这个新进程的记录 ProcessRecord。因此 AMS 通过 ApplicationThread 向新进程发了一个 SCHEDULE_LAUNCH_ACTIVITY_TRANSACTION 的消息通信。所以后面我们就转场到 新进程 中去分析。
+
+#### 2.7 回到新进程中处理 启动 Activity 的请求
+
+**Step 18 frameworks/base/core/java/android/app/ActivityThread.java**
+
+```java
+/**
+* intent: 就是最初的 intent
+* token: MainActivity 在 AMS 中的表现形式 [ActivityRecord]
+* ident: System.identityHashCode(r)
+* info: ActivityRecord.info
+* state: ActivityRecord.icicle
+* pendingResults: ActivityRecord.results
+* pendingNewIntents: ActivityRecord.newIntents
+* notResumed: false
+* isForwar: mService.isNextTransitionForward()
+*/
+public final void scheduleLaunchActivity(Intent intent, IBinder token, int ident,
+                ActivityInfo info, Bundle state, List<ResultInfo> pendingResults,
+                List<Intent> pendingNewIntents, boolean notResumed, boolean isForward) {
+            ActivityClientRecord r = new ActivityClientRecord();
+    			  // 到这里我们应该知道 mToken 是怎么来的了
+            r.token = token;
+            r.ident = ident;
+            r.intent = intent;
+            r.activityInfo = info;
+            r.state = state;
+
+            r.pendingResults = pendingResults;
+            r.pendingIntents = pendingNewIntents;
+
+            r.startsNotResumed = notResumed;
+            r.isForward = isForward;
+
+            queueOrSendMessage(H.LAUNCH_ACTIVITY, r);
+        }
+```
+
+将要启动的 Activity 组件的信息封装成一个 ActivityClientRecord 对象。然后往主线程的消息队列 H 发送一个 LAUNCH_ACTIVITY 的消息。
+
+H 收到这个消息，会分发给 `handleLaunchActivity` 处理。
+
+**Step 19 frameworks/base/core/java/android/app/ActivityThread.java**
+
+```java
+/**
+* r: MainActivity 组件信息
+* customIntent: null
+*/
+private final void handleLaunchActivity(ActivityClientRecord r, Intent customIntent) {
+        ......
+        // 执行启动 Activity
+        Activity a = performLaunchActivity(r, customIntent);
+
+        if (a != null) {
+            r.createdConfig = new Configuration(mConfiguration);
+            Bundle oldState = r.state;
+            // 处理 resume
+            handleResumeActivity(r.token, false, r.isForward);
+
+            ......
+        } else {
+            ......
+        }
+    }
+
+
+// --- 启动 Activity ------------------------------------------
+private final Activity performLaunchActivity(ActivityClientRecord r, Intent customIntent) {
+        
+        ......
+        // 首先获得要启动 Activity 的包名和类名
+        ComponentName component = r.intent.getComponent();
+        ......
+
+        Activity activity = null;
+        try {
+            // 终于生成了我们需要的 MainActivity 实例
+            java.lang.ClassLoader cl = r.packageInfo.getClassLoader();
+            activity = mInstrumentation.newActivity(
+                    cl, component.getClassName(), r.intent);
+            ......
+        } catch (Exception e) {
+            ......
+        }
+
+        try {
+            // 这里会根据 Manifest 文件中解析出来的 ApplicationInfo 去生成 Application。并且完成 Application 的 attach 、onCreate 生命周期
+            Application app = r.packageInfo.makeApplication(false, mInstrumentation);
+
+            ......
+
+            if (activity != null) {
+                // 创建 ContextImpl，这就是我们平常熟悉的 Context 了
+                ContextImpl appContext = new ContextImpl();
+                appContext.init(r.packageInfo, r.token, this);
+                appContext.setOuterContext(activity);
+                CharSequence title = r.activityInfo.loadLabel(appContext.getPackageManager());
+                Configuration config = new Configuration(mConfiguration);
+                ......
+                // 初始化 Activity 对象
+                activity.attach(appContext, this, getInstrumentation(), r.token,
+                        r.ident, app, r.intent, r.activityInfo, title, r.parent,
+                        r.embeddedID, r.lastNonConfigurationInstance,
+                        r.lastNonConfigurationChildInstances, config);
+
+                ......
+                // ok, 终于回调到 onCreate 了
+                mInstrumentation.callActivityOnCreate(activity, r.state);
+                ......
+            }
+            ......
+
+            mActivities.put(r.token, r);
+
+        } catch (SuperNotCalledException e) {
+            ......
+
+        } catch (Exception e) {
+            ......
+        }
+
+        return activity;
+    }
+```
+
+无 f**k 说
 
 ### 问题
 
 1. mToken 是怎么初始化的。
+
+### 参考
+Android 系统源代码情景分析（第三版）
+[老罗的博客](https://blog.csdn.net/luoshengyang/article/details/6689748)
