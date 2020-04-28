@@ -1,36 +1,27 @@
 package toOffer;
 
 /**
- * 15: 链表中倒数第k个结点
- * 输入一个链表，输出该链表中倒数第k个结点。
+ * 15: 二进制中 1 的个数
  */
 public class Solution15 {
-    class ListNode {
-        int val;
-        ListNode next = null;
 
-        ListNode(int val) {
-            this.val = val;
+    public static int hammingWeight(int n) {
+        // int count = 0;
+        // while (n != 0) {
+        //     count++;
+        //     n &= n-1;
+        // }
+        // return count;
+        int count = 0;
+        while (n != 0) {
+            count += n & 1;
+            n = n >>> 1;
         }
+        return count;
     }
 
-    public ListNode FindKthToTail(ListNode head,int k) {
-        if(head == null || k <= 0) return null;
-
-        ListNode pAhead = head , pBehind = null;
-        for(int i = 0; i < k - 1; i++) {
-            if(pAhead.next != null)
-                pAhead = pAhead.next;
-            else return null;
-        }
-
-        pBehind = head;
-        while(pAhead.next != null) {
-            pAhead = pAhead.next;
-            pBehind = pBehind.next;
-        }
-        return pBehind;
+    public static void main(String[] args) {
+        System.out.println("二进制中 1 的个数 = " + hammingWeight(-3));
     }
+
 }
-
-
