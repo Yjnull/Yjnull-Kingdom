@@ -1,7 +1,5 @@
 package toOffer;
 
-import java.util.Random;
-
 /**
  * 11: 旋转数组的最小数字
  */
@@ -71,8 +69,6 @@ public class Solution11 {
 
 
     // --- 隶属于 2.4.2 查找和排序 那一节，所以写个快排 -------------------------------------------------------------------
-    private static final Random RANDOM = new Random();
-
     public static void quickSort(int[] a) {
         quickSort(a, 0, a.length - 1);
     }
@@ -91,7 +87,7 @@ public class Solution11 {
             return -1;
         }
 
-        int index = RANDOM.nextInt(hi - lo + 1) + lo;
+        int index = (int) (lo + Math.random() * (hi - lo + 1));
         swap(a, index, hi);
 
         int pivot = a[hi];
