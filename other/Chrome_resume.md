@@ -22,6 +22,14 @@ Gldie  源码解析：https://blog.yorek.xyz/android/3rd-library/glide1/
 
 
 
+2020.04.29
+
+- 剑指 offer 一节，leetcode 两道题
+- 正则表达式匹配
+- Service 启动流程
+- RemoteServiceException 问题：Context.startForegroundService()。可延伸，需要完整通读源码
+- Linux 内核情景分析 2.2 地址映射的全过程
+
 2020.04.28
 
 - 剑指 offer 一节，leetcode 两道题
@@ -29,7 +37,7 @@ Gldie  源码解析：https://blog.yorek.xyz/android/3rd-library/glide1/
 - Service 启动流程
 - RemoteServiceException 问题：Context.startForegroundService()。可延伸，需要完整通读源码
 - Linux 内核情景分析 2.1 Linux 内存管理的基本框架
-- **花在了 kmp 算法，和 一个 crash 项目问题**
+- **完成了 1，2，5。花在了 kmp 算法，和 一个 crash 项目问题**
 
 ```java
  java.lang.RuntimeException: Unable to instantiate application cn.missevan.hotfix.MissevanTinkerApplication: java.lang.RuntimeException: Stub!
