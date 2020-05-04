@@ -1,5 +1,9 @@
 package toOffer;
 
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Set;
+
 /**
  *  55: 二叉树的深度
  *  扩展：平衡二叉树的判定
@@ -44,6 +48,11 @@ public class Solution55 {
         rightR3.right = new TreeNode(4);
 
         System.out.println("isBalanced = " + isBalanced(root));
+
+        System.out.println("a->" + (char)('a' ^ 32));
+        System.out.println("a->" + (char)('b' - 32));
+        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
+        priorityQueue.poll()
     }
 
 
