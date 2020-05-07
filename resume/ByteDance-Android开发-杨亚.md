@@ -8,7 +8,7 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 
 ### 专业技能
 
-* 熟悉 Android 的 Binder 进程间通信系统
+* 熟悉 Android 的事件分发机制、View 绘制流程、Binder 进程间通信机制等
 * 熟悉 Jvm 内存区域以及 GC 算法等
 * 熟悉常见的数据结构
 * 熟悉 Https 相关原理，以及 Git 使用
@@ -76,7 +76,7 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 ##### 职责：
 
 - 负责整体功能开发，管理项目进度。
-- 与研发方进行对接，确保完整可靠的接入 SDK。已接入 bilibili 游戏 《A3!满开剧团》，准备接入游族 《山海镜花》。
+- 与研发方进行对接，确保完整可靠的接入 SDK。已接入 bilibili 游戏 《A3!满开剧团》，游族 《山海镜花》。
 - 对应用进行二次签名上架，实现对游戏的管控。
 
 ---

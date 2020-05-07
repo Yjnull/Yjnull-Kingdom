@@ -1,8 +1,6 @@
 package toOffer;
 
-import java.util.HashSet;
-import java.util.PriorityQueue;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  55: 二叉树的深度
@@ -51,8 +49,13 @@ public class Solution55 {
 
         System.out.println("a->" + (char)('a' ^ 32));
         System.out.println("a->" + (char)('b' - 32));
-        PriorityQueue<Integer> priorityQueue = new PriorityQueue<>();
-        priorityQueue.poll()
+        Queue linkedList = new LinkedList();
+
+
+        ArrayList<Integer> integers = new ArrayList<>();
+        new ArrayList<>(integers)
+        Integer[] res = new Integer[10];
+        integers.toArray(res);
     }
 
 
