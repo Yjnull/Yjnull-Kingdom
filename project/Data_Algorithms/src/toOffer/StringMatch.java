@@ -1,17 +1,11 @@
 package toOffer;
 
-import java.util.*;
-
 /**
  * 字符串匹配算法：BM、KMP
  */
 public class StringMatch {
     public static void main(String[] args) {
         StringMatch match = new StringMatch();
-        HashMap<Integer, Object> integerObjectHashMap = new HashMap<>();
-        Set<Integer> set = new HashSet<>();
-        List a = new ArrayList();
-        a.set()
 
         String a = "ababaeabac";
         String b = "abac";

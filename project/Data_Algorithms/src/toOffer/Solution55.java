@@ -49,13 +49,6 @@ public class Solution55 {
 
         System.out.println("a->" + (char)('a' ^ 32));
         System.out.println("a->" + (char)('b' - 32));
-        Queue linkedList = new LinkedList();
-
-
-        ArrayList<Integer> integers = new ArrayList<>();
-        new ArrayList<>(integers)
-        Integer[] res = new Integer[10];
-        integers.toArray(res);
     }
 
 
