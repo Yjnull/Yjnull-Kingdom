@@ -614,3 +614,6 @@ status_t Surface::lock(SurfaceInfo* other, Region* dirtyIn, bool blocking)
 
 ### 6. 总结
 
+参考：
+[Android 显示系统](https://www.cnblogs.com/blogs-of-lxl/p/11272756.html)
+

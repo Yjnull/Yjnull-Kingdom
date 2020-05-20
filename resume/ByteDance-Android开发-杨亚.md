@@ -30,7 +30,7 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 ---
 ### 项目经历
 
-#### 2018/09 - 至今　　　　　　     猫耳FM　　　　　　           上海喵斯拉网络科技有限公司 
+#### 2018/09 - 至今　　　　　　     猫耳FM　　　　　　                   bilibili/猫耳部门 
 
 ##### 项目简介：
 
@@ -42,14 +42,14 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 4. 重写全屏播放页，减少原全屏播放 bug。其中增加弹幕设置功能、手势操作以及自定义带动画的进度条，解决小猫样式的进度条在滑动时，会有半边不显示问题。
 5. 运势语音新功能开发（类似阴阳师抽签功能）。 负责播放页面的开发，以及自定义竖排文字 View，解决团队难点问题。团队内推广 ConstraintLayout 使用。
 6. 网络诊断功能。将网络诊断结果上报至 sentry，由于 sentry 有上报数据量限制。通过研读 sentry 源码，实现自定义 sentry，解除数据量限制。
-7. 游戏中心开发。通过 okdownload 实现断点续传、分块下载，游戏下载完成后将自动安装打开。
+7. 游戏中心开发。通过 okdownload 实现下载、断点续传，游戏下载完成后将自动安装打开。
 
 ##### 职责：
 
 - 负责日常维护，新功能点的开发。 
 - 推广新技术点，研究难点技术。如 leader 想基于 Robolectric 实现模拟网络请求的功能，故自定义 shadow 类，截取 ApiService 的获取过程，然后参照 Retrofit 的动态代理，实现自己的 ApiService，并且在动态代理的 invoke 中加入自己真正的网络响应实现，达到模拟的目的。
 
-#### 2020/01 - 至今　　　　MiMi - ラジオドラマ　　　上海喵斯拉网络科技有限公司 
+#### 2020/01 - 至今　　　　MiMi - ラジオドラマ　　　                    bilibili/猫耳部门 
 
 ##### 项目简介：
 
@@ -63,7 +63,7 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 - 负责整体架构以及播放服务改善，管理项目进度。
 - 研究新技术点，团队内推广 kotlin 的使用。
 
-#### 2019/08 - 2019/11　　　MissEvan 游戏SDK　　　上海喵斯拉网络科技有限公司 
+#### 2019/08 - 2019/11　　　MissEvan 游戏SDK　　　                   bilibili/猫耳部门  
 
 ##### 项目简介：
 
@@ -83,7 +83,7 @@ GitHub: https://github.com/Yjnull　　　　　　 Blog: https://blog.csdn.net/
 
 ### 个人经历
 
-#### 2018/09 - 至今　　　   　  上海喵斯拉网络科技有限公司 　　       Android 开发
+#### 2018/09 - 至今　　　   　  北京喵斯拉网络科技有限公司 　　       Android 开发
 
 负责猫耳FM app 播放、下载相关部分的维护、重构，以及游戏 SDK 的完整开发。
 
