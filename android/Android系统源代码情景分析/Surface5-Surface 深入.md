@@ -1,5 +1,7 @@
 ## Surface 深入理解
 
+[Android 显示系统](https://www.cnblogs.com/blogs-of-lxl/p/11272756.html)
+
 ### 1. SurfaceComposerClient 分析
 
 **SurfaceComposerClient：这个对象会和 SurfaceFlinger 交互，因为 SurfaceFlinger 派生于 SurfaceComposer。**

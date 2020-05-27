@@ -252,3 +252,38 @@ void checkThread() {
 9. 遇到的最大的一个问题
 
    
+
+### BYTE-1
+
+1. Future，Callable ，Runnable 的区别
+2. 线程安全，原子性、有序性、可见性
+3. HashMap 的原理，ConcurrentHashMap
+4. 为什么需要线程池
+5. 线程池的使用，100 个任务，我想要暂停的时候能够取消当前任务，使得剩下的任务能够继续得到处理。（使用 shutdown，配置一个 单核心线程的线程池，等待队列设置 100 以上都行）
+6. 线程池的 ctl 几个状态，shutdown 和 shutdownNow 的区别
+7. 线程池中的线程是怎么做到复用的，线程的 run 运行完不就结束了？还有是怎么进行销毁的 （根据 Worker 集合，和 BlockingQueue 任务队列的 take 阻塞方法）
+8. Toast 能否在子线程中展示
+9. 紧接着 Toast 问，Toast 内部是通过 Looper 实现，那 Looper 讲一下，讲一下 ThreadLocal 的原理，用的什么数据结构，key、value 是什么
+10. MessageQueue 中没消息的时候，主线程的反应（陷入阻塞状态，等待唤醒）
+11. recyclerview 和 listview 的区别，recyclerview 的缓存机制
+12. recyclerview 中统计广告完全出现时的次数
+13. 底部弹窗，BottomSheetDialogFragment，这个弹窗里的内容绘制很复杂，造成很卡，并且最开始一两秒有空白页，怎么进行优化。(性能优化)
+14. 当有 5 个请求时，我想要 5 个请求的结果都拿到后，再返回怎么做 (RxJava 的 zip，或者 CountDownLatch)
+15. 5 个有顺序的请求，一个一个执行，怎么做
+16. 为什么使用 okhttp，有哪些优点。Retrofit、okhttp 有没有自己做定制优化。
+17. binder 原理（简单的说了下 mmap、ServiceManager）和 Socket 通信的对比。
+18. 算法：判断一颗树是否是另一颗的子树。
+
+### BYTE-2
+
+1. ANR
+2. MessageQueue ，A B C200ms D 四个消息，入队是怎样 ，出队是怎样
+3. 插件化
+4. ASM
+5. 简历的一切
+
+### BYTE-3
+
+1. 项目的挑战
+2. 项目的优点、难点
+3. 针对滑动验证做一个 多请求的处理

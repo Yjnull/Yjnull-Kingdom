@@ -1,4 +1,4 @@
-package gc;
+package lagou.gc;
 
 public class GCRootThread {
 
